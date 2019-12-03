@@ -1,36 +1,37 @@
 <h1 align='center'>Malkit - Full malware kit</h1>
 <p align="center">	
-    <img src="https://img.shields.io/badge/Platform-Windows-green" />
-	<a href="https://github.com/darkarp/chromepass/releases/latest">
-	<img src="https://img.shields.io/github/v/release/darkarp/chromepass" alt="Release" />
+    <img src="https://img.shields.io/badge/Platform-Windows-green?style=plastic" />
+	<a href="https://github.com/darkarp/malkit/releases/latest?style=plastic">
+	<img src="https://img.shields.io/github/v/release/darkarp/malkit?style=plastic" alt="Release" />
 	</a>
-  <a href="https://travis-ci.org/darkarp/chrome-password-hacking">
-    <img src="https://img.shields.io/badge/build-passing-green" alt="Build Status on CircleCI" />
-	</a>
+    <img src="https://img.shields.io/badge/build-passing-green?style=plastic" alt="Build Status on CircleCI" />
     <img src="https://img.shields.io/maintenance/yes/2021" />
 	</br>
   
-  <a href="https://github.com/darkarp/chromepass/commits/master">
-    <img src="https://img.shields.io/github/last-commit/darkarp/chromepass" />
+  <a href="https://github.com/darkarp/malkit/commits/master">
+    <img src="https://img.shields.io/github/last-commit/darkarp/malkit?style=plastic" />
   </a>
-  <img alt="Scrutinizer code quality (GitHub/Bitbucket)" src="https://img.shields.io/scrutinizer/quality/g/darkarp/chromepass?style=flat">
-  <a href="https://github.com/darkarp/chromepass/blob/master/LICENSE">
-    <img src="http://img.shields.io/github/license/darkarp/chromepass" />
+
+
+  <a href="https://github.com/darkarp/malkit/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/darkarp/malkit?style=plastic" />
   </a>
+
+
   </br>
-  <a href="https://github.com/darkarp/chromepass/issues?q=is%3Aopen+is%3Aissue">
-	<img alt="GitHub issues" src="https://img.shields.io/github/issues/darkarp/chromepass">
-</a
-<a href="https://github.com/darkarp/chromepass/issues?q=is%3Aissue+is%3Aclosed">
-	<img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/darkarp/chromepass">
+
+  <a href="https://github.com/darkarp/malkit/issues?q=is%3Aopen+is%3Aissue">
+	<img alt="GitHub issues" src="https://img.shields.io/github/issues/darkarp/malkit?style=plastic">
+</a>
+
+<a href="https://github.com/darkarp/malkit/issues?q=is%3Aissue+is%3Aclosed">
+	<img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/darkarp/malkit">
 </a>
 </br>
   <a href="https://discord.gg/beczNYP">
     <img src="https://img.shields.io/badge/discord-join-7289DA.svg?logo=discord&longCache=true&style=flat" />
   </a>
   </br>
-  <a href="http://itsec.us/">View Demo</a>
-    ·
     <a href="https://github.com/darkarp/chromepass/issues/new?assignees=&labels=&template=bug_report.md&title=">Report Bug</a>
     ·
     <a href="https://github.com/darkarp/chromepass/issues/new?assignees=&labels=&template=feature_request.md&title=">Request Feature</a>
@@ -121,10 +122,11 @@ If the errors persist, try:
 
 ## Usage
 
-Show the help screen
+* Show the help screen
 
 ```powershell
 > python malkit.py -h
+```
 ```
 usage: python malkit.py [-h] {build_listener, build_malware, build_chromepass} ...
 
@@ -135,6 +137,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 Access the help menu for individual arguments
+```
 ```powershell
 >python malkit.py build_chromepass -h
 ```
