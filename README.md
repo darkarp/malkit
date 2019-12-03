@@ -11,6 +11,7 @@
   <a href="https://github.com/darkarp/malkit/commits/master">
     <img src="https://img.shields.io/github/last-commit/darkarp/malkit?style=plastic" />
   </a>
+  <img alt="Scrutinizer code quality (GitHub/Bitbucket)" src="https://img.shields.io/scrutinizer/quality/g/darkarp/malkit?style=flat">
 
 
   <a href="https://github.com/darkarp/malkit/blob/master/LICENSE">
