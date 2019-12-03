@@ -179,6 +179,11 @@ example:
  * Creating a listener for the malware
  `python malkit.py build_listener -p 444`
   - This is the listener for the malware
+  - While in the shell, you can use the `list` command to see active sessions.
+  - You can interact with a session by using the command: `interact::SESSION_NUMBER` where SESSION_NUMBER is the number of the session yo want to connect with. 
+  - To go back into listener mode after interacting with a session, use the command `<bg` or `<background`
+  - Other commands while interacting have been added but still experimental:
+    - `<download` - Downloads a file from the server
 
 
 ## Todo
