@@ -64,14 +64,13 @@ It has the following features:
     - Send a file with the login/password combinations remotely (email or reverse shell)
     - Custom icon
     - Custom error message
-
-  - Accurate location reporting. It can detect and send back a victim's accurate geolocation (not ip-based)
+  - Accurate location reporting. It can detect and send back a victim's accurate geolocation (not ip-based) (X)
   - Easy to use
   - Completely undetectable by AV engines
 
-Features marked with an X are still in development but are already complete in internal testing.
+Features marked with an X are still in development and aren't fully working but are already complete in internal testing.
 ### AV Detection!
-Due to the way this has been coded, it is currently fully undetected. Here are some links to scans performed using a variety of websites
+Due to the way this has been coded, it is currently fully undetected. Here are some links to scans performed
   - [From build_malware](https://www.virustotal.com/gui/file/61fc9c4ad472a240f4fd010958a0b0210f6513ed878bd47b90e25da871e52068/detection) 
   - [From build_chromepass](https://antiscan.me/scan/new/result?id=kmpsMNccfuRJ)
   - Both scans yielded the result: 1.69 detections. The sole detection is a false positive by Sangfor Engine Zero
