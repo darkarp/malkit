@@ -1,0 +1,4 @@
+MB_OK = 0x00
+MB_ICONSTOP = 0x10
+ctypes.windll.user32.MessageBoxW(
+	None, u'<<ERRORMSG>>', u'<<TITLE>>', MB_OK | MB_ICONSTOP)

