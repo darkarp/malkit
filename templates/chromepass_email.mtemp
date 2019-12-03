@@ -110,9 +110,6 @@ try:
 except:
 	check_call(["attrib", "+H", destination])
 	
-MB_OK = 0x00
-MB_ICONSTOP = 0x10
-ctypes.windll.user32.MessageBoxW(
-	None, u'Virtual memory is too low to run this program', u'Error', MB_OK | MB_ICONSTOP)
+<<ERROR>>
 
 
