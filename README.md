@@ -190,6 +190,7 @@ example:
 
 
 ## Todo
+ - Reducing `malware` file size to around 4-6 MB, possible by making the original `malware` download the rest of the payload via the reverse connection.
  - Sending Real-time precise location of the victim (***completed, releases next update***)
  - Also steal Firefox passwords (***Completed, releases next update***)
  - Option of installing a backdoor allowing remote control of the victim's computer (***completed, releases next update***)
