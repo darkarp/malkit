@@ -127,10 +127,7 @@ If the errors persist, try:
 ## Usage
 
 * Show the help screen
-
-```powershell
-> python malkit.py -h
-```  
+    - `python malkit.py -h`
 
 ```
 usage: python malkit.py [-h] {build_listener, build_malware, build_chromepass} ...
@@ -143,10 +140,7 @@ optional arguments:
 
 ```  
 * Access the help menu for individual arguments
-
-```powershell
->python malkit.py build_chromepass -h
-```  
+    - `python malkit.py build_chromepass -h`
 
 ```
 usage: python malkit.py build_chromepass [-h] [--load] [--email] [--reverse_shell]
