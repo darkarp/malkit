@@ -93,8 +93,9 @@ The instructions on the full setup are below.
 **Setup Anaconda environment:**
   - Visit [Anaconda](https://www.anaconda.com/distribution/#download-section) and download the graphical installer for windows.
   - Run the installer and make sure you select the checkbox "Add conda to path", even though it isn't recommended.
-  - Update anaconda by opening powershell and typing:
-     - `conda init powershell`
+  - Open up powershell and enable conda to use it:
+    - `conda init powershell`
+  - Close and open a new powershell and update conda:
      - `conda update conda`
   - Create a new anaconda environment:
     - `conda create -n malkit python=3.7`
