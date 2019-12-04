@@ -60,8 +60,9 @@ It has the following features:
   - Connecting back to an attacker via reverse shell
   - Custom listener with upload, download and modular capability (in progress)
   - Chromepass feature:
-    - Decrypt Chrome saved paswords
+    - Decrypt Chrome saved paswords ad well as all cookies
     - Send a file with the login/password combinations remotely (email or reverse shell)
+    - Send a file with all the extracted cookies as well as another file with possible email-related cookies
     - Custom icon
     - Custom error message
   - Accurate location reporting. It can detect and send back a victim's accurate geolocation (not ip-based) (X)
