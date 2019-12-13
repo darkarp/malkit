@@ -89,7 +89,7 @@ For this application you need:
 ### Installation
 
 Chromepass requires [Python] 3.6+ to run.
-It has been tested on a full anaconda installation but it doesn't necessariliy require it.  
+It has been tested on a full anaconda installation but it doesn't necessariliy require it. It doesn't work with Python 3.8 yet
 The instructions on the full setup are below.
 
 **Setup Anaconda environment:**
