@@ -81,9 +81,10 @@ Due to the way this has been coded, it is currently fully undetected. Here are s
 
 ### Dependencies and Requirements
 
-This is a very simple application, which uses only:
+For this application you need:
 
-* [Python] - Only tested on 3.7.5 on Anaconda environment but should work in 3.6+ (Doesn't work in 3.8 yet)
+* [Python] - Only tested on 3.7.5 on Anaconda environment but should work in 3.6+ (Doesn't work in 3.8 yet). No need to download it from here, just follow [Installation below](#installation)
+* [VS build tools] - This is required to build some requirements. Please download it, install it and restart your computer **BEFORE** proceding to [Installation](#installation)
 
 ### Installation
 
@@ -123,6 +124,8 @@ If the errors persist, try:
 > python -m pip install --upgrade pip
 > python -m pip install -r requirements.txt
 ```  
+If any errors **still** persist, make sure you have the following installed:  
+* [VS build tools]
   
 
 
@@ -218,5 +221,6 @@ I am not responsible for what you do with the information and code provided. Thi
 <a href="https://github.com/darkarp/malkit/blob/master/LICENSE"> MIT </a>
    
 [Python]: <https://www.anaconda.com/distribution/#download-section>
+[VS build tools]: <https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16>
 
 
