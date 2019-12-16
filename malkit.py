@@ -15,6 +15,11 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read(CONFIG_FILE)
 
 
+def check_folders():
+    if not os.path.exists("builds"):
+        os.mkdir("builds")
+
+
 def build_listener(args):
     port = args.p
     with open("templates/listener.mtemp", "r") as f:
@@ -39,6 +44,7 @@ def build_listener(args):
 
 def build_malware(args):
     print("[!] Still in testing")
+    check_folders()
     host = f"'{args.host}'"
     port = str(args.p)
     for _ in range(5):
