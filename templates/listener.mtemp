@@ -101,7 +101,7 @@ def handle_client():
                         elif command == 'cls' or command == 'clear':
                             os.system('cls')
                             continue
-                        elif command == "<bg" or command == "<background":
+                        elif command == "<bg" or command == "<background" or command == "exit":
                             print(f"Backgrounded: {snum}")
                             break
                         elif '<download' in command:

