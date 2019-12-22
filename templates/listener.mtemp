@@ -74,6 +74,13 @@ def handle_client():
             com, *arg = input(f"Listener> ").split(" ")
             com = com.lower()
             arg = ''.join(arg).lower()
+            if com == "cls" or com == "clear":
+                try:
+                    os.system("cls")
+                except:
+                    os.system("clear")
+            if com == "exit":
+                raise KeyboardInterrupt
             if com == "list":
                 for x in sessions:
                     print(f"{x[0]}: {x[2]}")
@@ -95,11 +102,14 @@ def handle_client():
                 while True:
                     try:
                         command = input(f"[{snum}] Shell>")
-                        if '<terminate' in command:
+                        if command.startswith("exit") or command.startswith("<exit"):
                             sessions.pop(int(snum))
-                            break
+                            raise KeyboardInterrupt
                         elif command == 'cls' or command == 'clear':
-                            os.system('cls')
+                            try:
+                                os.system("cls")
+                            except:
+                                os.system("clear")
                             continue
                         elif command == "<bg" or command == "<background" or command == "exit":
                             print(f"Backgrounded: {snum}")
