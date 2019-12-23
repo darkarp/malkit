@@ -37,11 +37,11 @@ import os
 import System
 
 from .event import Event
-from pyreadline.logger import log
+from _pline.logger import log
 
-from pyreadline.keysyms import \
+from _pline.keysyms import \
     make_keysym, make_keyinfo, make_KeyPress, make_KeyPress_from_keydescr
-from pyreadline.console.ansi import AnsiState
+from _pline.console.ansi import AnsiState
 color = System.ConsoleColor
 
 ansicolor={"0;30": color.Black,

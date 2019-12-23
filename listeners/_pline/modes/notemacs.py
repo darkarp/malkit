@@ -8,10 +8,10 @@
 #*****************************************************************************
 from __future__ import print_function, unicode_literals, absolute_import
 import os
-import pyreadline.logger as logger
-from   pyreadline.logger import log
-import pyreadline.lineeditor.lineobj as lineobj
-import pyreadline.lineeditor.history as history
+import _pline.logger as logger
+from   _pline.logger import log
+import _pline.lineeditor.lineobj as lineobj
+import _pline.lineeditor.history as history
 from . import basemode
 
 class NotEmacsMode(basemode.BaseMode):

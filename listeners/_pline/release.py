@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals, absolute_import
-"""Release data for the pyreadline project.
+"""Release data for the _pline project.
 
 $Id$"""
 
@@ -14,7 +14,7 @@ $Id$"""
 
 # Name of the package for release purposes.  This is the name which labels
 # the tarballs and RPMs made by distutils, so it's best to lowercase it.
-name = 'pyreadline'
+name = '_pline'
 
 # For versions with substrings (like 0.6.16.svn), use an extra . to separate
 # the new substring.  We have to avoid using either dashes or underscores,
@@ -29,13 +29,13 @@ description = "A python implmementation of GNU readline."
 
 long_description = \
 """
-The pyreadline package is a python implementation of GNU readline functionality
+The _pline package is a python implementation of GNU readline functionality
 it is based on the ctypes based UNC readline package by Gary Bishop.
 It is not complete. It has been tested for use with windows 2000 and windows xp.
 
-* pyreadline 2.1 <2015-09-16>
+* _pline 2.1 <2015-09-16>
 
-  This is a bugfix release to make pyreadline work with python 3.5.
+  This is a bugfix release to make _pline work with python 3.5.
 
   Contributors to this release:
 
@@ -43,7 +43,7 @@ It is not complete. It has been tested for use with windows 2000 and windows xp.
     - kivhift, improved error message for running on non windows platforms
     - zooba, made helpful suggestions to make it work for python 3.5
 
-  Version 2.1 of pyreadline has been verfied for Python 2.7, and 3.4, 3.5.
+  Version 2.1 of _pline has been verfied for Python 2.7, and 3.4, 3.5.
 
 
 Features:
@@ -60,7 +60,7 @@ Features:
  The latest development version is always available at the IPython github
  repository_.
 
-.. _repository: https://github.com/pyreadline/pyreadline.git
+.. _repository: https://github.com/_pline/_pline.git
  """
 
 license = 'BSD'
@@ -70,13 +70,13 @@ authors = {'Jorgen' : ('Jorgen Stenarson','jorgen.stenarson@kroywen.se'),
            'Jack':    ('Jack Trainor', ''),
            }
 
-url = 'http://ipython.org/pyreadline.html'
-download_url = 'https://pypi.python.org/pypi/pyreadline/'
+url = 'http://ipython.org/_pline.html'
+download_url = 'https://pypi.python.org/pypi/_pline/'
 platforms = ['Windows XP/2000/NT',
              'Windows 95/98/ME']
 
 keywords = ['readline',
-            'pyreadline']
+            '_pline']
 
 classifiers = ['Development Status :: 5 - Production/Stable',
                'Environment :: Console',

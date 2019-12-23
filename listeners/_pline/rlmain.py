@@ -14,14 +14,14 @@ from glob import glob
 from . import release
 from .py3k_compat import callable, execfile
 
-import pyreadline.lineeditor.lineobj as lineobj
-import pyreadline.lineeditor.history as history
-import pyreadline.clipboard as clipboard
-import pyreadline.console as console
-import pyreadline.logger as logger 
+import _pline.lineeditor.lineobj as lineobj
+import _pline.lineeditor.history as history
+import _pline.clipboard as clipboard
+import _pline.console as console
+import _pline.logger as logger 
 
-from pyreadline.keysyms.common import make_KeyPress_from_keydescr
-from pyreadline.unicode_helper import ensure_unicode, ensure_str
+from _pline.keysyms.common import make_KeyPress_from_keydescr
+from _pline.unicode_helper import ensure_unicode, ensure_str
 from .logger import log
 from .modes import editingmodes
 from .error import ReadlineError, GetSetError
@@ -95,7 +95,7 @@ class BaseReadline(object):
                 except AttributeError:
                     log('unknown func key="%s" func="%s"' % (key, func_name))
                     if self.debug:
-                        print('pyreadline parse_and_bind error, unknown function to bind: "%s"' % func_name)
+                        print('_pline parse_and_bind error, unknown function to bind: "%s"' % func_name)
                     return
                 self.mode._bind_key(key, func)
         except:
@@ -278,7 +278,7 @@ class BaseReadline(object):
             self.callback(line)
 
     def read_inputrc(self, #in 2.4 we cannot call expanduser with unicode string
-                     inputrcpath=os.path.expanduser(ensure_str("~/pyreadlineconfig.ini"))):
+                     inputrcpath=os.path.expanduser(ensure_str("~/_plineconfig.ini"))):
         modes = dict([(x.mode,x) for x in self.editingmodes])
         mode = self.editingmodes[0].mode
 
@@ -308,8 +308,8 @@ class BaseReadline(object):
                 del modes[mode].exit_dispatch[keyinfo]
 
         def setkill_ring_to_clipboard(killring):
-            import pyreadline.lineeditor.lineobj 
-            pyreadline.lineeditor.lineobj.kill_ring_to_clipboard = killring
+            import _pline.lineeditor.lineobj 
+            _pline.lineeditor.lineobj.kill_ring_to_clipboard = killring
 
         def sethistoryfilename(filename):
             self.mode._history.history_filename = os.path.expanduser(ensure_str(filename))
@@ -348,7 +348,7 @@ class BaseReadline(object):
         def enable_ipython_paste_for_paths(boolean):
             self.mode.enable_ipython_paste_for_paths = boolean
 
-        def debug_output(on, filename="pyreadline_debug_log.txt"): #Not implemented yet
+        def debug_output(on, filename="_pline_debug_log.txt"): #Not implemented yet
             if on in ["on", "on_nologfile"]:
                 self.debug=True
 
@@ -574,8 +574,8 @@ class Readline(BaseReadline):
         return self.get_line_buffer() + '\n'
 
     def handle_ctrl_c(self):
-        from pyreadline.keysyms.common import KeyPress
-        from pyreadline.console.event import Event
+        from _pline.keysyms.common import KeyPress
+        from _pline.console.event import Event
         log("KBDIRQ")
         event = Event(0,0)
         event.char = "c"

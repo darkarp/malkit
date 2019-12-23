@@ -36,8 +36,8 @@ from __future__ import print_function, unicode_literals, absolute_import
 import ctypes
 import ctypes.wintypes as wintypes
 from ctypes import *
-from pyreadline.keysyms.winconstants import CF_UNICODETEXT, GHND
-from pyreadline.unicode_helper import ensure_unicode,ensure_str
+from _pline.keysyms.winconstants import CF_UNICODETEXT, GHND
+from _pline.unicode_helper import ensure_unicode,ensure_str
 
 OpenClipboard = windll.user32.OpenClipboard
 OpenClipboard.argtypes = [wintypes.HWND]

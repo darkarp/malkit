@@ -6,10 +6,10 @@
 #  the file COPYING, distributed as part of this software.
 #*****************************************************************************
 from __future__ import print_function, unicode_literals, absolute_import
-from pyreadline.modes.emacs import *
-from pyreadline import keysyms
-from pyreadline.lineeditor import lineobj
-from pyreadline.keysyms.common import make_KeyPress_from_keydescr
+from _pline.modes.emacs import *
+from _pline import keysyms
+from _pline.lineeditor import lineobj
+from _pline.keysyms.common import make_KeyPress_from_keydescr
 
 import unittest
 class MockReadline:

@@ -4,15 +4,15 @@ from __future__ import print_function, unicode_literals, absolute_import
 
 import sys, unittest
 sys.path.append ('../..')
-#from pyreadline.modes.vi import *
-#from pyreadline import keysyms
-from pyreadline.lineeditor import lineobj
-from pyreadline.lineeditor.history import LineHistory
-import pyreadline.lineeditor.history as history
+#from _pline.modes.vi import *
+#from _pline import keysyms
+from _pline.lineeditor import lineobj
+from _pline.lineeditor.history import LineHistory
+import _pline.lineeditor.history as history
 
-import pyreadline.logger
-pyreadline.logger.sock_silent=False
-from pyreadline.logger import log
+import _pline.logger
+_pline.logger.sock_silent=False
+from _pline.logger import log
 #----------------------------------------------------------------------
 
 

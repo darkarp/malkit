@@ -9,9 +9,9 @@ from __future__ import print_function, unicode_literals, absolute_import
 import re, operator, sys
 
 from . import wordmatcher
-import pyreadline.clipboard as clipboard
-from pyreadline.logger import  log
-from pyreadline.unicode_helper import ensure_unicode, biter
+import _pline.clipboard as clipboard
+from _pline.logger import  log
+from _pline.unicode_helper import ensure_unicode, biter
 
 kill_ring_to_clipboard = False #set to true to copy every addition to kill ring to clipboard
 

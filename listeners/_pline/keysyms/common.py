@@ -14,7 +14,7 @@ try:
 except NameError:
     from sets import Set as set
     
-from pyreadline.unicode_helper import ensure_unicode
+from _pline.unicode_helper import ensure_unicode
 
 validkey =set(['cancel',      'backspace',    'tab',          'clear',
                'return',      'shift_l',      'control_l',    'alt_l',

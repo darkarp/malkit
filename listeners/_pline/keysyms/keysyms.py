@@ -8,7 +8,7 @@
 #*****************************************************************************
 from __future__ import print_function, unicode_literals, absolute_import
 from . import winconstants as c32
-from   pyreadline.logger import log
+from   _pline.logger import log
 from ctypes import windll
 import ctypes
 # table for translating virtual keys to X windows key symbols

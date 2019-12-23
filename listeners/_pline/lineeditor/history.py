@@ -8,18 +8,18 @@
 from __future__ import print_function, unicode_literals, absolute_import
 import re, operator, string, sys, os
 
-from pyreadline.unicode_helper import ensure_unicode, ensure_str
-if "pyreadline" in sys.modules:
-    pyreadline = sys.modules["pyreadline"]
+from _pline.unicode_helper import ensure_unicode, ensure_str
+if "_pline" in sys.modules:
+    _pline = sys.modules["_pline"]
 else:
-    import pyreadline
+    import _pline
 
 from . import lineobj
 
 class EscapeHistory(Exception):
     pass
 
-from pyreadline.logger import log
+from _pline.logger import log
 
 
 class LineHistory(object):

@@ -2,15 +2,15 @@
 # Example snippet to use in a PYTHONSTARTUP file
 from __future__ import print_function, unicode_literals, absolute_import
 try:
-    import pyreadline.rlmain
-    #pyreadline.rlmain.config_path=r"c:\xxx\pyreadlineconfig.ini"
+    import _pline.rlmain
+    #_pline.rlmain.config_path=r"c:\xxx\_plineconfig.ini"
     import readline, atexit
-    import pyreadline.unicode_helper
+    import _pline.unicode_helper
     #
     #
-    #Normally the codepage for pyreadline is set to be sys.stdout.encoding
+    #Normally the codepage for _pline is set to be sys.stdout.encoding
     #if you need to change this uncomment the following line
-    #pyreadline.unicode_helper.pyreadline_codepage="utf8"
+    #_pline.unicode_helper._pline_codepage="utf8"
 except ImportError:
     print("Module readline not available.")
 else:

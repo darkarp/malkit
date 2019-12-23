@@ -8,15 +8,15 @@
 from __future__ import print_function, unicode_literals, absolute_import
 
 import socket, logging, logging.handlers
-from pyreadline.unicode_helper import ensure_str
+from _pline.unicode_helper import ensure_str
 
 host = "localhost"
 port = logging.handlers.DEFAULT_TCP_LOGGING_PORT
 
 
-pyreadline_logger = logging.getLogger('PYREADLINE')
-pyreadline_logger.setLevel(logging.DEBUG)
-pyreadline_logger.propagate = False
+_pline_logger = logging.getLogger('_pline')
+_pline_logger.setLevel(logging.DEBUG)
+_pline_logger.propagate = False
 formatter = logging.Formatter(str('%(message)s'))
 file_handler = None
 
@@ -38,29 +38,29 @@ class SocketStream(object):
         pass
 
 socket_handler = None
-pyreadline_logger.addHandler(NULLHandler())
+_pline_logger.addHandler(NULLHandler())
 
 def start_socket_log():
     global socket_handler
     socket_handler = logging.StreamHandler(SocketStream(host, port))
     socket_handler.setFormatter(formatter)
-    pyreadline_logger.addHandler(socket_handler)
+    _pline_logger.addHandler(socket_handler)
 
 def stop_socket_log():
     global socket_handler
     if socket_handler:
-        pyreadline_logger.removeHandler(socket_handler)
+        _pline_logger.removeHandler(socket_handler)
         socket_handler = None
 
 def start_file_log(filename):
     global file_handler
     file_handler = logging.FileHandler(filename, "w")
-    pyreadline_logger.addHandler(file_handler)
+    _pline_logger.addHandler(file_handler)
 
 def stop_file_log():
     global file_handler
     if file_handler:
-        pyreadline_logger.removeHandler(file_handler)
+        _pline_logger.removeHandler(file_handler)
         file_handler.close()
         file_handler = None
 
@@ -71,4 +71,4 @@ def stop_logging():
 
 def log(s):
     s = ensure_str(s)
-    pyreadline_logger.debug(s)
+    _pline_logger.debug(s)

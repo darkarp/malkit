@@ -8,15 +8,15 @@
 #*****************************************************************************
 from __future__ import print_function, unicode_literals, absolute_import
 import os, re, math, glob, sys, time
-from pyreadline.py3k_compat import callable
-import pyreadline.logger as logger
-from   pyreadline.logger import log
-from   pyreadline.keysyms.common import make_KeyPress_from_keydescr
-import pyreadline.lineeditor.lineobj as lineobj
-import pyreadline.lineeditor.history as history
-import pyreadline.clipboard as clipboard
-from pyreadline.error import ReadlineError,GetSetError
-from pyreadline.unicode_helper import ensure_str, ensure_unicode
+from _pline.py3k_compat import callable
+import _pline.logger as logger
+from   _pline.logger import log
+from   _pline.keysyms.common import make_KeyPress_from_keydescr
+import _pline.lineeditor.lineobj as lineobj
+import _pline.lineeditor.history as history
+import _pline.clipboard as clipboard
+from _pline.error import ReadlineError,GetSetError
+from _pline.unicode_helper import ensure_str, ensure_unicode
 in_ironpython = "IronPython" in sys.version
 
 class BaseMode(object):

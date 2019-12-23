@@ -8,13 +8,13 @@
 #*****************************************************************************
 from __future__ import print_function, unicode_literals, absolute_import
 import os, sys, time
-import pyreadline.logger as logger
-from   pyreadline.logger import log
-from pyreadline.lineeditor.lineobj import Point
-import pyreadline.lineeditor.lineobj as lineobj
-import pyreadline.lineeditor.history as history
+import _pline.logger as logger
+from   _pline.logger import log
+from _pline.lineeditor.lineobj import Point
+import _pline.lineeditor.lineobj as lineobj
+import _pline.lineeditor.history as history
 from . import basemode
-from pyreadline.unicode_helper import ensure_unicode
+from _pline.unicode_helper import ensure_unicode
 
 
 def format(keyinfo):
