@@ -15,8 +15,10 @@ You are running this on Linux and as such, building capabilities are limited.
 You can only build the listener
 
 """)
+    linux = True
 else:
     from darkarp.malkit_modules import build
+    linux = False
 
 # from testing import build
 
@@ -60,6 +62,8 @@ def build_listener(args):
                 try:
                     call(["python", "listeners/listener.py"])
                 except KeyboardInterrupt:
+                    if linux:
+                        os.system("reset")
                     print("[+] Exited successfully")
                     os._exit(0)
 
