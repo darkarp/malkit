@@ -8,7 +8,6 @@ from builtins import KeyboardInterrupt
 from subprocess import call
 
 if sys.platform == "linux":
-    from darkarp.malkit_modules import build
     print("""
     [!] ATTENTION
 
@@ -16,6 +15,8 @@ You are running this on Linux and as such, building capabilities are limited.
 You can only build the listener
 
 """)
+else:
+    from darkarp.malkit_modules import build
 
 # from testing import build
 
