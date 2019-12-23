@@ -60,6 +60,7 @@ def build_listener(args):
                 try:
                     call(["python", "listeners/listener.py"])
                 except KeyboardInterrupt:
+                    print("[+] Exited successfully")
                     os._exit(0)
 
             elif start.lower() == 'n' or start.lower() == "no":

@@ -298,8 +298,8 @@ def handle_client():
                     continue
                 print(f"\nNumber of sessions: {len(sessions)}\n")
                 for x in sessions:
-                    print(f"{x[0]}: {x[2][0]} / {x[2][1]} (remote: {port}")
-                print("\n\n")
+                    print(f"{x[0]}: {x[2][0]} / {x[2][1]} (remote: {port})")
+                print("\n")
             elif com == "kill":
                 try:
                     int_arg = int(arg)
