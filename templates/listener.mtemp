@@ -5,9 +5,12 @@ import time
 from threading import Thread
 
 from progress.spinner import Spinner
-from pywin.scintilla import keycodes
-
-from _pline import console
+if sys.platform == "linux":
+    import readline
+    linux = True
+else:
+    from _pline import console
+    linux = False
 
 sessions = []
 alive = True
@@ -76,6 +79,9 @@ def die():
         time.sleep(0.1)
     spinner.finish()
     clear()
+    if linux:
+        os.system("reset")
+        sys.exit(0)
     print("[+] Exited Successfully")
     os._exit(1)
 
@@ -148,6 +154,23 @@ exit or <exit   -   Kills the current shell, returning you into the listener
 
 commands_listener = ["help ", "kill ", "list ", "interact::", "exit "]
 commands_shell = ["<bg ", "<background ", "<download::", "<exit", "<help"]
+
+def completer_listener_linux(text, state):
+    for cmd in commands_listener:
+        if cmd.startswith(text):
+            if not state:
+                return cmd
+            else:
+                state -= 1
+
+
+def completer_shell_linux(text, state):
+    for cmd in commands_shell:
+        if cmd.startswith(text):
+            if not state:
+                return cmd
+            else:
+                state -= 1
 
 
 def completer_listener(text):
@@ -227,7 +250,6 @@ def handle_keys(buffer, state, completer):
             return (False, buffer)
         return (False, buffer)
     except Exception as err:
-        raise(err)
         return (None, buffer)
 
 
@@ -239,22 +261,26 @@ def handle_client():
         continue
     state_listen = f"Listener> "
     while alive:
-        c.write(state_listen)
         try:
-            while True:
-                enter_state, buffer = handle_keys(buffer, state_listen, "listener")
-                if enter_state:
-                    if enter_state == "FLUSH":
-                        c.write(state_listen)
-                        continue
+            if not linux:
+                c.write(state_listen)
+                while True:
+                    enter_state, buffer = handle_keys(
+                        buffer, state_listen, "listener")
+                    if enter_state:
+                        if enter_state == "FLUSH":
+                            c.write(state_listen)
+                            continue
+                        else:
+                            com, *arg = buffer.split(" ")
+                            buffer = ""
+                            break
                     else:
-                        com, *arg = buffer.split(" ")
-                        buffer = ""
-                        break         
-                else:
-                    continue
-            
-            com = com.lower()
+                        continue
+            else:
+                readline.parse_and_bind("tab: complete")
+                readline.set_completer(completer_listener_linux)
+                com, *arg = input(f"Listener> ").split("::")
             arg = ''.join(arg).lower()
             if com == "cls" or com == "clear" or com.encode() == b'\x0c':
                 clear()
@@ -287,21 +313,26 @@ def handle_client():
                     print("make sure you did it right")
                     continue
                 while alive:
-                    c.write(state_shell)
-                    buffer = ""
-                    while True:
-                        enter_state, buffer = handle_keys(buffer, state_shell, "shell")
-                        if enter_state:
-                            if enter_state == "FLUSH":
-                                c.write(state_shell)
-                                continue
-                            else:
-                                command = buffer
-                                buffer = ""
-                                break         
-                        else:
-                            continue
                     try:
+                        if not linux:
+                            c.write(state_shell)
+                            buffer = ""
+                            while True:
+                                enter_state, buffer = handle_keys(
+                                    buffer, state_shell, "shell")
+                                if enter_state:
+                                    if enter_state == "FLUSH":
+                                        c.write(state_shell)
+                                        continue
+                                    else:
+                                        command = buffer
+                                        buffer = ""
+                                        break
+                                else:
+                                    continue
+                        else:
+                            readline.parse_and_bind("tab: complete")
+                            readline.set_completer(completer_listener_linux)
                         if command == "<exit":
                             sessions.pop(int(snum))
                             buffer = ""
@@ -383,9 +414,10 @@ queue = []
 if __name__ == "__main__":
 
     try:
-        c = console.Console(0)
-        sys.stdout = c
-        sys.stderr = c
+        if not linux:
+            c = console.Console(0)
+            sys.stdout = c
+            sys.stderr = c
 
         run_server_thread = Thread(target=run_server)
         print_conn_thread = Thread(target=print_conn)

