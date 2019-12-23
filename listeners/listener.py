@@ -79,7 +79,7 @@ def run_server():
     global mainalive
     
     host = "0.0.0.0"
-    port = <<PORT>>
+    port = 4444
     s = socket.socket()
     tries = 60
     if block:
@@ -99,7 +99,7 @@ def run_server():
             continue
         print("Couldn't fix socket problem. Try again.")
         die()
-    s.listen(<<CONNECTIONS_MAX>>)
+    s.listen(10)
     mainalive += 1
     while alive:
         if block:
