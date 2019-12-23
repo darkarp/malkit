@@ -92,6 +92,8 @@ def run_server():
     host = "0.0.0.0"
     port = <<PORT>>
     s = socket.socket()
+    if linux:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     tries = 60
     for conTry in range(tries):
         try:
@@ -281,6 +283,7 @@ def handle_client():
                 readline.parse_and_bind("tab: complete")
                 readline.set_completer(completer_listener_linux)
                 com, *arg = input(f"Listener> ").split("::")
+                com = com.strip()
             arg = ''.join(arg).lower()
             if com == "cls" or com == "clear" or com.encode() == b'\x0c':
                 clear()
@@ -434,7 +437,7 @@ if __name__ == "__main__":
         run_alive(queue)
 
         while True:
-            time.sleep(1000)
+            time.sleep(1)
 
     except (KeyboardInterrupt, SystemExit):
         die()
