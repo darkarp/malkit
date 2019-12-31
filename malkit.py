@@ -195,8 +195,6 @@ def build_malware(args):
     time.sleep(1)
     os.system("cls")
     print("You can locate the generated file in the builds folder.")
-    create_downloader()
-    run_server()
     done = False
     while not done:
         listener_build = input(
