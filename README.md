@@ -95,7 +95,11 @@ The instructions on the full setup are below.
 **Setup Anaconda environment:**
   - Visit [Anaconda](https://www.anaconda.com/distribution/#download-section) and download the graphical installer for windows.
   - Run the installer and make sure you select the checkbox "Add conda to path", even though it isn't recommended.
-  - Open up powershell and enable conda to use it:
+  - Open up a **new** powershell window **as administrator** and run:
+    - `Set-ExecutionPolicy RemoteSigned`
+    - Press `A` when it prompts you.
+    - Close this window
+  - Open up a normal powershell and enable conda to use it:
     - `conda init powershell`
   - Close and open a new powershell and update conda:
      - `conda update conda`
