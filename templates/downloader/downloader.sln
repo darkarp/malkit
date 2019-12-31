@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "downloader", "downloader\downloader.csproj", "{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		test|Any CPU = test|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}.test|Any CPU.ActiveCfg = test|Any CPU
+		{9A6C83B1-4224-4CD4-BD9C-1362918B22E8}.test|Any CPU.Build.0 = test|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5817361D-4966-42EE-A7B9-25E93EC79F6F}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,13 @@
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\bin\Debug\downloader.exe.config
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\bin\Debug\downloader.exe.manifest
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\bin\Debug\downloader.application
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\bin\Debug\downloader.exe
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\bin\Debug\downloader.pdb
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.csprojResolveAssemblyReference.cache
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.Properties.Resources.resources
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.csproj.GenerateResource.Cache
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.TrustInfo.xml
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.exe.manifest
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.application
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.exe
+G:\My PC\Documents\Projects\Malware\malkit\templates\downloader\downloader\obj\Debug\downloader.pdb
